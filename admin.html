@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 | 월출어람 웹진</title>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const FIREBASE_CONFIG = {
+  apiKey:            "여기에_apiKey_입력",
+  authDomain:        "여기에_authDomain_입력",
+  projectId:         "여기에_projectId_입력",
+  storageBucket:     "여기에_storageBucket_입력",
+  messagingSenderId: "여기에_messagingSenderId_입력",
+  appId:             "여기에_appId_입력"
+};
+
+let db = null;
+try {
+  const app = initializeApp(FIREBASE_CONFIG);
+  db = getFirestore(app);
+  window.__db = db;
+  window.__fs = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query };
+  console.log("Firebase 연결 성공");
+} catch(e) {
+  console.warn("Firebase 설정 필요:", e.message);
+}
+</script>
+
+<style>
+:root {
+  --sky:#5bb8e8; --sky-d:#2d88b5; --sky-l:#e8f6fd;
+  --pink:#e8608a; --navy:#1a3a5c;
+  --green:#2e8b57; --red:#c0392b; --gold:#e8960a;
+  --text:#1c1c1c; --text-m:#444; --text-s:#777;
+  --bg:#f0f6fb; --white:#fff; --border:#d4eaf8;
+  --r:10px; --sh:0 2px 14px rgba(91,184,232,.1);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { font-size:15px; }
+body { font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6; }
+a { text-decoration:none; color:inherit; }
+button { font-family:inherit; cursor:pointer; }
+input,select,textarea { font-family:inherit; }
+
+/* 로그인 */
+.login-page { min-height:100vh; display:flex; align-items:center;
+  justify-content:center; background:linear-gradient(135deg,#c8e8f8,#f8d4e4); }
+.login-box { background:var(--white); border-radius:20px; padding:40px 36px;
+  width:340px; box-shadow:0 8px 40px rgba(91,184,232,.2); }
+.login-logo { text-align:center; margin-bottom:26px; }
+.l-ico { width:50px; height:50px; background:linear-gradient(135deg,var(--sky),var(--navy));
+  border-radius:14px; display:flex; align-items:center; justify-content:center;
+  margin:0 auto 10px; font-size:1.4rem; }
+.login-logo strong { display:block; font-size:1rem; font-weight:900; color:var(--navy); }
+.login-logo span { font-size:.73rem; color:var(--text-s); }
+.fg { margin-bottom:14px; }
+.fg label { display:block; font-size:.76rem; font-weight:700;
+  color:var(--text-m); margin-bottom:5px; }
+.fg input { width:100%; border:1.5px solid var(--border); border-radius:8px;
+  padding:10px 13px; font-size:.87rem; background:var(--bg); color:var(--text);
+  outline:none; transition:border .2s; }
+.fg input:focus { border-color:var(--sky); background:var(--white); }
+.btn-login { width:100%; background:linear-gradient(135deg,var(--sky),var(--navy));
+  color:#fff; border:none; border-radius:10px; padding:12px;
+  font-size:.92rem; font-weight:800; margin-top:6px; transition:opacity .18s; }
+.btn-login:hover { opacity:.88; }
+.login-err { color:var(--red); font-size:.76rem; text-align:center;
+  margin-top:10px; display:none; }
+.login-back { text-align:center; margin-top:14px; font-size:.73rem; color:var(--text-s); }
+.login-back a { color:var(--sky); }
+
+/* 대시보드 */
+#dash { display:none; min-height:100vh; }
+.adm-hd { background:var(--navy); color:#fff; padding:0 20px;
+  display:flex; align-items:center; gap:12px; height:56px;
+  position:sticky; top:0; z-index:100; }
+.adm-hd .logo { font-size:.92rem; font-weight:900; margin-right:auto; }
+.adm-hd .logo small { font-size:.66rem; opacity:.55; font-weight:400; margin-left:6px; }
+.hd-btn { background:rgba(255,255,255,.12); border:none; color:rgba(255,255,255,.85);
+  border-radius:16px; padding:5px 13px; font-size:.76rem; }
+.hd-btn:hover { background:rgba(255,255,255,.22); color:#fff; }
+
+.adm-body { display:grid; grid-template-columns:210px 1fr; min-height:calc(100vh - 56px); }
+
+/* 사이드바 */
+.sb { background:var(--white); border-right:1px solid var(--border); padding:18px 0; }
+.sb-sec { padding:0 14px; margin-bottom:16px; }
+.sb-sec-t { font-size:.63rem; font-weight:800; color:var(--text-s);
+  text-transform:uppercase; letter-spacing:.1em; padding:0 8px; margin-bottom:6px; }
+.sb-btn { display:flex; align-items:center; gap:7px; padding:8px 10px;
+  border-radius:8px; font-size:.8rem; font-weight:600; color:var(--text-m);
+  border:none; background:none; width:100%; text-align:left; transition:all .18s; }
+.sb-btn:hover { background:var(--sky-l); color:var(--sky); }
+.sb-btn.on { background:var(--sky-l); color:var(--sky); font-weight:800; }
+
+/* 메인 */
+.adm-main { padding:24px 28px; overflow-y:auto; }
+.panel { display:none; }
+.panel.on { display:block; }
+.p-title { font-size:1.05rem; font-weight:900; color:var(--navy);
+  margin-bottom:18px; display:flex; align-items:center; gap:8px; }
+.p-badge { background:var(--sky-l); color:var(--sky);
+  font-size:.7rem; padding:3px 9px; border-radius:8px; font-weight:700; }
+
+/* 버튼 */
+.btn { display:inline-flex; align-items:center; gap:5px;
+  border-radius:8px; padding:7px 15px; font-size:.78rem; font-weight:700;
+  border:none; transition:all .18s; }
+.btn-p { background:var(--sky); color:#fff; }
+.btn-p:hover { background:var(--sky-d); }
+.btn-s { background:var(--green); color:#fff; }
+.btn-s:hover { background:#1e6b3c; }
+.btn-d { background:var(--red); color:#fff; }
+.btn-d:hover { background:#a02020; }
+.btn-o { background:transparent; border:1.5px solid var(--border); color:var(--text-m); }
+.btn-o:hover { border-color:var(--sky); color:var(--sky); }
+.btn-sm { padding:4px 11px; font-size:.72rem; }
+
+/* 대시보드 카드 */
+.d-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px; }
+.d-card { background:var(--white); border-radius:var(--r); padding:18px; box-shadow:var(--sh); }
+.d-num { font-size:2rem; font-weight:900; color:var(--sky); line-height:1; }
+.d-label { font-size:.73rem; color:var(--text-s); margin-top:4px; }
+
+/* 상태 표시 */
+.fb-status { display:flex; align-items:center; gap:8px; padding:10px 14px;
+  border-radius:8px; font-size:.78rem; font-weight:700; margin-bottom:18px; }
+.fb-status.ok  { background:#e8f5ee; color:#1a6b3c; border:1px solid #b8e0c8; }
+.fb-status.err { background:#fce8e8; color:#8b1a1a; border:1px solid #e8b8b8; }
+.fb-status.warn{ background:var(--sky-l); color:var(--navy); border:1px solid var(--border); }
+
+/* 기사 테이블 */
+.toolbar { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; align-items:center; }
+.toolbar input { border:1.5px solid var(--border); border-radius:8px;
+  padding:7px 13px; font-size:.78rem; background:var(--bg); color:var(--text);
+  outline:none; flex:1; min-width:160px; }
+.toolbar input:focus { border-color:var(--sky); }
+.toolbar select { border:1.5px solid var(--border); border-radius:8px;
+  padding:7px 11px; font-size:.78rem; background:var(--bg); color:var(--text); outline:none; }
+.tbl { width:100%; border-collapse:collapse; background:var(--white);
+  border-radius:var(--r); overflow:hidden; box-shadow:var(--sh); }
+.tbl th { background:var(--navy); color:#fff; padding:10px 13px;
+  font-size:.73rem; font-weight:700; text-align:left; }
+.tbl td { padding:10px 13px; font-size:.78rem; border-bottom:1px solid var(--border);
+  vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:var(--sky-l); }
+.tc { font-weight:700; color:var(--navy); max-width:260px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.acts { display:flex; gap:5px; white-space:nowrap; }
+.chip { display:inline-block; border-radius:9px; padding:2px 8px;
+  font-size:.66rem; font-weight:800; }
+
+/* 에디터 */
+.editor-wrap { background:var(--white); border-radius:var(--r); padding:24px; box-shadow:var(--sh); }
+.f-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.f-row.full { grid-template-columns:1fr; }
+.f-g { display:flex; flex-direction:column; gap:4px; }
+.f-g label { font-size:.73rem; font-weight:700; color:var(--text-m); }
+.f-g .req { color:var(--red); }
+.f-g input,.f-g select,.f-g textarea {
+  border:1.5px solid var(--border); border-radius:8px; padding:8px 12px;
+  font-size:.83rem; color:var(--text); background:var(--bg); outline:none; transition:border .2s; }
+.f-g input:focus,.f-g select:focus,.f-g textarea:focus {
+  border-color:var(--sky); background:var(--white); }
+.f-g textarea { resize:vertical; min-height:80px; }
+
+/* 본문 에디터 */
+.c-editor { border:1.5px solid var(--border); border-radius:8px; overflow:hidden; }
+.c-toolbar { background:var(--bg); border-bottom:1px solid var(--border);
+  padding:7px 10px; display:flex; gap:5px; flex-wrap:wrap; }
+.c-toolbar button { background:var(--white); border:1px solid var(--border);
+  border-radius:5px; padding:3px 9px; font-size:.73rem; font-weight:700; color:var(--text-m); }
+.c-toolbar button:hover { background:var(--sky-l); color:var(--sky); border-color:var(--sky); }
+#cedit { min-height:260px; padding:14px; font-size:.85rem;
+  line-height:1.8; outline:none; color:var(--text); }
+#csrc { display:none; width:100%; min-height:260px; padding:14px;
+  font-size:.78rem; font-family:monospace; border:none; outline:none;
+  resize:vertical; color:var(--text); background:var(--bg); }
+.f-actions { display:flex; gap:8px; margin-top:18px; padding-top:14px; border-top:1px solid var(--border); }
+
+/* 설정 */
+.set-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.set-card { background:var(--white); border-radius:var(--r); padding:20px; box-shadow:var(--sh); }
+.set-card h3 { font-size:.85rem; font-weight:800; color:var(--navy);
+  margin-bottom:13px; padding-bottom:9px; border-bottom:1px solid var(--border); }
+.set-f { margin-bottom:11px; }
+.set-f label { display:block; font-size:.72rem; font-weight:700; color:var(--text-m); margin-bottom:4px; }
+.set-f input { width:100%; border:1.5px solid var(--border); border-radius:7px;
+  padding:8px 11px; font-size:.82rem; background:var(--bg); color:var(--text); outline:none; }
+.set-f input:focus { border-color:var(--sky); background:var(--white); }
+
+/* 삭제 확인 */
+.conf { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5);
+  z-index:500; align-items:center; justify-content:center; }
+.conf.open { display:flex; }
+.conf-box { background:var(--white); border-radius:14px; padding:26px;
+  max-width:340px; width:90%; box-shadow:0 8px 32px rgba(0,0,0,.2); }
+.conf-box h3 { font-size:.95rem; font-weight:900; color:var(--navy); margin-bottom:8px; }
+.conf-box p { font-size:.8rem; color:var(--text-m); margin-bottom:18px; }
+.conf-acts { display:flex; gap:8px; justify-content:flex-end; }
+
+/* 미리보기 */
+.prev-ov { display:none; position:fixed; inset:0; background:rgba(0,0,0,.6);
+  z-index:600; overflow-y:auto; padding:20px; }
+.prev-box { background:#fff; border-radius:16px; max-width:660px; margin:0 auto; }
+.prev-hd { background:linear-gradient(135deg,#5bb8e8,#1a3a5c); color:#fff;
+  padding:22px; border-radius:16px 16px 0 0; position:relative; }
+.prev-hd h2 { font-size:1.15rem; font-weight:900; line-height:1.4; }
+.prev-body { padding:22px; font-size:.86rem; line-height:1.85; color:#444; }
+.prev-body p { margin-bottom:12px; }
+.prev-body h3 { font-size:.92rem; font-weight:800; color:#1a3a5c; margin:14px 0 6px; }
+.prev-close { position:absolute; top:12px; right:12px; background:rgba(255,255,255,.2);
+  border:none; color:#fff; width:28px; height:28px; border-radius:50%; font-size:.9rem; }
+
+/* 토스트 */
+.toast { position:fixed; bottom:22px; right:22px; background:var(--navy); color:#fff;
+  border-radius:9px; padding:11px 18px; font-size:.8rem; font-weight:700;
+  z-index:999; transform:translateY(50px); opacity:0; transition:all .28s; pointer-events:none; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.ok  { background:var(--green); }
+.toast.err { background:var(--red); }
+
+/* 반응형 */
+@media(max-width:720px) {
+  .adm-body { grid-template-columns:1fr; }
+  .sb { display:none; }
+  .f-row { grid-template-columns:1fr; }
+  .set-grid { grid-template-columns:1fr; }
+  .d-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- 로그인 화면 -->
+<div id="loginPage" class="login-page">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="l-ico">🌿</div>
+      <strong>월출어람 관리자</strong>
+      <span>영암군장애인종합복지관 웹진</span>
+    </div>
+    <div class="fg">
+      <label>아이디</label>
+      <input type="text" id="lid" placeholder="아이디 입력" autocomplete="username">
+    </div>
+    <div class="fg">
+      <label>비밀번호</label>
+      <input type="password" id="lpw" placeholder="비밀번호 입력" autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-login" onclick="doLogin()">로그인</button>
+    <div class="login-err" id="lerr">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+    <div class="login-back"><a href="index.html">← 웹진으로 돌아가기</a></div>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div id="dash">
+  <header class="adm-hd">
+    <div class="logo">월출어람 관리자 <small>영암군장애인종합복지관</small></div>
+    <a class="hd-btn" href="index.html" target="_blank">🌐 웹진 보기</a>
+    <button class="hd-btn" onclick="doLogout()">로그아웃</button>
+  </header>
+
+  <div class="adm-body">
+    <!-- 사이드바 -->
+    <aside class="sb">
+      <div class="sb-sec">
+        <div class="sb-sec-t">대시보드</div>
+        <button class="sb-btn on" onclick="go('pdash',this)">📊 현황 요약</button>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-sec-t">기사 관리</div>
+        <button class="sb-btn" onclick="go('plist',this)">📋 기사 목록</button>
+        <button class="sb-btn" onclick="newArt()">✏️ 새 기사 작성</button>
+      </div>
+      <div class="sb-sec">
+        <div class="sb-sec-t">설정</div>
+        <button class="sb-btn" onclick="go('pset',this)">⚙️ 기관 정보</button>
+        <button class="sb-btn" onclick="go('ppw',this)">🔒 비밀번호 변경</button>
+      </div>
+    </aside>
+
+    <!-- 콘텐츠 -->
+    <div class="adm-main">
+
+      <!-- 대시보드 패널 -->
+      <div class="panel on" id="pdash">
+        <div class="p-title">📊 현황 요약</div>
+        <div id="fbStatus" class="fb-status warn">⏳ Firebase 연결 확인 중...</div>
+        <div class="d-grid">
+          <div class="d-card"><div class="d-num" id="dtotal">0</div><div class="d-label">전체 기사</div></div>
+          <div class="d-card"><div class="d-num" id="dcats">0</div><div class="d-label">카테고리 수</div></div>
+          <div class="d-card"><div class="d-num" id="ddate" style="font-size:.95rem;padding-top:4px">-</div><div class="d-label">최신 기사</div></div>
+        </div>
+        <div style="background:var(--white);border-radius:var(--r);padding:18px;box-shadow:var(--sh)">
+          <div style="font-size:.85rem;font-weight:800;color:var(--navy);margin-bottom:12px">카테고리별 현황</div>
+          <div id="catStat"></div>
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:.75rem;color:var(--text-s)">
+            💡 <strong>기사 목록</strong>에서 기사를 수정·삭제하거나 새 기사를 추가할 수 있습니다.<br>
+            저장하면 웹진에 <strong>즉시 반영</strong>됩니다.
+          </div>
+        </div>
+      </div>
+
+      <!-- 기사 목록 패널 -->
+      <div class="panel" id="plist">
+        <div class="p-title">📋 기사 목록 <span class="p-badge" id="artCnt">0건</span></div>
+        <div class="toolbar">
+          <input type="text" id="tsrch" placeholder="제목 검색..." oninput="renderTbl()">
+          <select id="tcat" onchange="renderTbl()">
+            <option value="">전체 카테고리</option>
+            <option>관장인사말</option><option>발자취</option><option>프로그램</option>
+            <option>나들이</option><option>지역사회</option><option>공모사업</option>
+            <option>후원봉사</option><option>소식</option>
+          </select>
+          <button class="btn btn-p" onclick="newArt()">+ 새 기사</button>
+        </div>
+        <table class="tbl">
+          <thead><tr>
+            <th>No</th><th>제목</th><th>카테고리</th><th>날짜</th><th>관리</th>
+          </tr></thead>
+          <tbody id="artTbl"></tbody>
+        </table>
+      </div>
+
+      <!-- 에디터 패널 -->
+      <div class="panel" id="peditor">
+        <div class="p-title" id="edTitle">✏️ 새 기사 작성</div>
+        <div class="editor-wrap">
+          <input type="hidden" id="eid">
+          <div class="f-row">
+            <div class="f-g">
+              <label>제목 <span class="req">*</span></label>
+              <input type="text" id="etitle" placeholder="기사 제목">
+            </div>
+            <div class="f-g">
+              <label>카테고리 <span class="req">*</span></label>
+              <select id="ecat">
+                <option>관장인사말</option><option>발자취</option><option>프로그램</option>
+                <option>나들이</option><option>지역사회</option><option>공모사업</option>
+                <option>후원봉사</option><option>소식</option>
+              </select>
+            </div>
+          </div>
+          <div class="f-row">
+            <div class="f-g">
+              <label>이모지</label>
+              <input type="text" id="eemoji" placeholder="예: 🌿 ☀️ 🤝">
+            </div>
+            <div class="f-g">
+              <label>날짜</label>
+              <input type="date" id="edate">
+            </div>
+          </div>
+          <div class="f-row">
+            <div class="f-g">
+              <label>작성자</label>
+              <input type="text" id="eauthor" placeholder="예: 기획운영지원팀">
+            </div>
+            <div class="f-g">
+              <label>특집 여부</label>
+              <select id="efeat">
+                <option value="false">일반 기사</option>
+                <option value="true">특집 기사 (메인 상단 표시)</option>
+              </select>
+            </div>
+          </div>
+          <div class="f-row full">
+            <div class="f-g">
+              <label>요약 <span class="req">*</span></label>
+              <textarea id="esum" placeholder="카드에 표시될 짧은 설명 (2~3문장)"></textarea>
+            </div>
+          </div>
+          <div class="f-row full">
+            <div class="f-g">
+              <label>본문 내용 <span class="req">*</span>
+                <small style="color:var(--text-s);font-weight:400"> — 아래 툴바로 서식 적용</small>
+              </label>
+              <div class="c-editor">
+                <div class="c-toolbar">
+                  <button onclick="fmt('bold')"><b>굵게</b></button>
+                  <button onclick="fmt('italic')"><i>기울임</i></button>
+                  <button onclick="fmt('underline')"><u>밑줄</u></button>
+                  <button onclick="iTag('h3')">제목</button>
+                  <button onclick="iTag('h4')">소제목</button>
+                  <button onclick="iTag('p')">단락</button>
+                  <button onclick="fmt('insertUnorderedList')">목록</button>
+                  <button onclick="fmt('insertHorizontalRule')">구분선</button>
+                  <button onclick="toggleSrc()">HTML보기</button>
+                </div>
+                <div id="cedit" contenteditable="true" spellcheck="false"></div>
+                <textarea id="csrc"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="f-actions">
+            <button class="btn btn-s" onclick="saveArt()">💾 저장하기</button>
+            <button class="btn btn-o" onclick="go('plist',null)">취소</button>
+            <button class="btn btn-o" onclick="prevArt()" style="margin-left:auto">👁 미리보기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 설정 패널 -->
+      <div class="panel" id="pset">
+        <div class="p-title">⚙️ 기관 정보 설정</div>
+        <div class="set-grid">
+          <div class="set-card">
+            <h3>📍 기본 정보</h3>
+            <div class="set-f"><label>소식지 제목</label><input id="sttl" placeholder="월출어람"></div>
+            <div class="set-f"><label>호수</label><input id="svol" placeholder="VOL. 2호"></div>
+            <div class="set-f"><label>주소</label><input id="sadr"></div>
+            <div class="set-f"><label>전화</label><input id="stel"></div>
+            <div class="set-f"><label>팩스</label><input id="sfax"></div>
+            <div class="set-f"><label>이메일</label><input id="seml"></div>
+            <div class="set-f"><label>홈페이지</label><input id="sweb"></div>
+          </div>
+          <div class="set-card">
+            <h3>🏦 후원 계좌</h3>
+            <div class="set-f"><label>비지정후원 계좌</label><input id="sa1" placeholder="광주은행 1107-021-791537"></div>
+            <div class="set-f"><label>지정후원 계좌</label><input id="sa2" placeholder="광주은행 1107-021-791571"></div>
+            <div class="set-f"><label>예금주</label><input id="san" placeholder="영암군장애인종합복지관"></div>
+            <div class="set-f"><label>후원 문의 전화</label><input id="sdt"></div>
+          </div>
+        </div>
+        <div style="margin-top:14px">
+          <button class="btn btn-s" onclick="saveSetting()">💾 설정 저장</button>
+        </div>
+      </div>
+
+      <!-- 비밀번호 패널 -->
+      <div class="panel" id="ppw">
+        <div class="p-title">🔒 비밀번호 변경</div>
+        <div style="background:var(--white);border-radius:var(--r);padding:24px;max-width:400px;box-shadow:var(--sh)">
+          <div class="fg"><label>현재 비밀번호</label><input type="password" id="pwc"></div>
+          <div class="fg"><label>새 비밀번호</label><input type="password" id="pwn"></div>
+          <div class="fg"><label>새 비밀번호 확인</label><input type="password" id="pwn2"></div>
+          <button class="btn btn-s" onclick="chgPw()" style="margin-top:6px">변경하기</button>
+          <p style="font-size:.72rem;color:var(--text-s);margin-top:12px">
+            초기 계정 — ID: <strong>admin</strong> / PW: <strong>wolchul2026</strong>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 삭제 확인 -->
+<div class="conf" id="confDel">
+  <div class="conf-box">
+    <h3>🗑 기사 삭제</h3>
+    <p id="confMsg"></p>
+    <div class="conf-acts">
+      <button class="btn btn-o" onclick="closeConf()">취소</button>
+      <button class="btn btn-d" onclick="doDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- 미리보기 -->
+<div class="prev-ov" id="prevOv">
+  <div class="prev-box">
+    <div class="prev-hd">
+      <div id="pvcat" style="font-size:.68rem;font-weight:800;background:rgba(255,255,255,.22);padding:3px 9px;border-radius:9px;display:inline-block;margin-bottom:7px"></div>
+      <h2 id="pvtitle"></h2>
+      <div id="pvmeta" style="font-size:.72rem;opacity:.8;margin-top:6px"></div>
+      <button class="prev-close" onclick="document.getElementById('prevOv').style.display='none'">✕</button>
+    </div>
+    <div class="prev-body" id="pvcontent"></div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══ 인증 ══ */
+const DEF_ID = 'admin', DEF_PW = 'wolchul2026';
+function creds(){ return { id: ls('adm_id')||DEF_ID, pw: ls('adm_pw')||DEF_PW }; }
+function isLogged(){ return sessionStorage.getItem('wc_auth')==='1'; }
+
+function doLogin(){
+  const id = gi('lid').value.trim();
+  const pw = gi('lpw').value;
+  const c  = creds();
+  if(id===c.id && pw===c.pw){
+    sessionStorage.setItem('wc_auth','1');
+    gi('loginPage').style.display='none';
+    gi('dash').style.display='block';
+    initDash();
+  } else {
+    gi('lerr').style.display='block';
+    setTimeout(()=>gi('lerr').style.display='none', 3000);
+  }
+}
+gi('lid').addEventListener('keydown', e=>{ if(e.key==='Enter') gi('lpw').focus(); });
+gi('lpw').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+
+function doLogout(){
+  sessionStorage.removeItem('wc_auth');
+  location.reload();
+}
+
+if(isLogged()){
+  gi('loginPage').style.display='none';
+  gi('dash').style.display='block';
+  initDash();
+}
+
+/* ══ 데이터 ══ */
+let ARTS = [];
+let fbReady = false;
+
+async function loadArts(){
+  // Firebase 연결된 경우
+  if(window.__db && window.__fs){
+    try {
+      const { collection, getDocs, orderBy, query } = window.__fs;
+      const q = query(collection(window.__db,'articles'), orderBy('date','desc'));
+      const snap = await getDocs(q);
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      fbReady = true;
+      return arr;
+    } catch(e){
+      console.warn('Firestore 로드 실패:', e.message);
+    }
+  }
+  // localStorage fallback
+  try { return JSON.parse(localStorage.getItem('wolchul_articles')||'[]'); }
+  catch{ return []; }
+}
+
+async function saveArtToDb(art){
+  if(window.__db && window.__fs && fbReady){
+    const { collection, addDoc, updateDoc, doc } = window.__fs;
+    if(art._isNew){
+      delete art._isNew;
+      const ref = await addDoc(collection(window.__db,'articles'), art);
+      art.id = ref.id;
+    } else {
+      const id = art.id; delete art.id;
+      await updateDoc(doc(window.__db,'articles',id), art);
+      art.id = id;
+    }
+    return;
+  }
+  // localStorage
+  const arr = JSON.parse(localStorage.getItem('wolchul_articles')||'[]');
+  const idx = arr.findIndex(a=>a.id===art.id);
+  if(idx>=0) arr[idx]=art; else arr.push(art);
+  localStorage.setItem('wolchul_articles', JSON.stringify(arr));
+}
+
+async function deleteArtFromDb(id){
+  if(window.__db && window.__fs && fbReady){
+    const { doc, deleteDoc } = window.__fs;
+    await deleteDoc(doc(window.__db,'articles',id));
+    return;
+  }
+  const arr = JSON.parse(localStorage.getItem('wolchul_articles')||'[]').filter(a=>a.id!==id);
+  localStorage.setItem('wolchul_articles', JSON.stringify(arr));
+}
+
+/* ══ 대시보드 초기화 ══ */
+async function initDash(){
+  ARTS = await loadArts();
+  updateFbStatus();
+  renderDash();
+  loadSettingForm();
+}
+
+function updateFbStatus(){
+  const el = gi('fbStatus');
+  if(window.__db && fbReady){
+    el.className='fb-status ok';
+    el.textContent='✅ Firebase 연결됨 — 저장 즉시 모든 방문자에게 반영됩니다.';
+  } else if(window.__db && !fbReady){
+    el.className='fb-status err';
+    el.textContent='⚠️ Firebase 설정값을 확인해주세요. 현재 이 기기에만 저장됩니다.';
+  } else {
+    el.className='fb-status warn';
+    el.textContent='ℹ️ Firebase 미연결 — 현재 이 기기에만 저장됩니다. firebase-config 설정 후 재접속하세요.';
+  }
+}
+
+function renderDash(){
+  gi('dtotal').textContent = ARTS.length;
+  const cats = [...new Set(ARTS.map(a=>a.cat))];
+  gi('dcats').textContent = cats.length;
+  const latest = [...ARTS].sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+  gi('ddate').textContent = latest ? (latest.date||'').replace(/-/g,'.') : '-';
+  const stat = {};
+  ARTS.forEach(a=>{ stat[a.cat]=(stat[a.cat]||0)+1; });
+  gi('catStat').innerHTML = Object.entries(stat).map(([k,v])=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+      <span style="min-width:76px;font-size:.78rem;font-weight:700">${k}</span>
+      <div style="flex:1;height:7px;background:#eee;border-radius:4px">
+        <div style="height:7px;background:var(--sky);border-radius:4px;width:${Math.round(v/ARTS.length*100)}%"></div>
+      </div>
+      <span style="font-size:.72rem;color:var(--text-s)">${v}건</span>
+    </div>`).join('');
+}
+
+/* ══ 패널 전환 ══ */
+function go(id, btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  gi(id).classList.add('on');
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  if(id==='plist') renderTbl();
+  if(id==='pdash'){ renderDash(); updateFbStatus(); }
+  if(id==='pset') loadSettingForm();
+}
+
+/* ══ 기사 목록 ══ */
+const CC2={관장인사말:'#5bb8e8',발자취:'#8b5e8b',프로그램:'#2e8b57',나들이:'#e8960a',지역사회:'#e8608a',공모사업:'#1a6b8b',후원봉사:'#2e6b4a',소식:'#666'};
+function renderTbl(){
+  const sq=(gi('tsrch').value||'').toLowerCase();
+  const sc=gi('tcat').value;
+  const list=ARTS.filter(a=>{
+    const mq=!sq||a.title.toLowerCase().includes(sq);
+    const mc=!sc||a.cat===sc;
+    return mq&&mc;
+  });
+  gi('artCnt').textContent=list.length+'건';
+  gi('artTbl').innerHTML=list.map((a,i)=>`
+    <tr>
+      <td style="color:var(--text-s);font-size:.72rem">${i+1}</td>
+      <td><div class="tc">${a.title}</div></td>
+      <td><span class="chip" style="background:${CC2[a.cat]||'#eee'}22;color:${CC2[a.cat]||'#666'}">${a.cat}</span></td>
+      <td style="font-size:.73rem;color:var(--text-s)">${(a.date||'').replace(/-/g,'.')}</td>
+      <td><div class="acts">
+        <button class="btn btn-o btn-sm" onclick="editArt('${a.id}')">✏️ 수정</button>
+        <button class="btn btn-d btn-sm" onclick="askDel('${a.id}','${a.title.replace(/'/g,"\\'")}')">삭제</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+/* ══ 에디터 ══ */
+let srcMode=false;
+function newArt(){
+  gi('edTitle').textContent='✏️ 새 기사 작성';
+  gi('eid').value='';
+  gi('etitle').value='';
+  gi('ecat').value='관장인사말';
+  gi('eemoji').value='📝';
+  gi('edate').value=new Date().toISOString().split('T')[0];
+  gi('eauthor').value='기획운영지원팀';
+  gi('efeat').value='false';
+  gi('esum').value='';
+  gi('cedit').innerHTML='';
+  gi('csrc').value='';
+  srcMode=false; gi('cedit').style.display=''; gi('csrc').style.display='none';
+  go('peditor',null);
+}
+function editArt(id){
+  const a=ARTS.find(x=>x.id==id||x.id===id);
+  if(!a) return;
+  gi('edTitle').textContent='✏️ 기사 수정';
+  gi('eid').value=a.id;
+  gi('etitle').value=a.title||'';
+  gi('ecat').value=a.cat||'관장인사말';
+  gi('eemoji').value=a.emoji||'📄';
+  gi('edate').value=a.date||'';
+  gi('eauthor').value=a.author||'';
+  gi('efeat').value=a.featured?'true':'false';
+  gi('esum').value=a.summary||'';
+  gi('cedit').innerHTML=a.content||'';
+  gi('csrc').value=a.content||'';
+  srcMode=false; gi('cedit').style.display=''; gi('csrc').style.display='none';
+  go('peditor',null);
+}
+async function saveArt(){
+  const title=gi('etitle').value.trim();
+  const summary=gi('esum').value.trim();
+  const content=srcMode?gi('csrc').value:gi('cedit').innerHTML.trim();
+  if(!title){ toast('제목을 입력해주세요.','err'); return; }
+  if(!summary){ toast('요약을 입력해주세요.','err'); return; }
+  if(!content||content==='<br>'){ toast('본문 내용을 입력해주세요.','err'); return; }
+  const rawId=gi('eid').value;
+  const isNew=!rawId;
+  const art={
+    id: isNew ? 'art_'+Date.now() : rawId,
+    title, cat:gi('ecat').value, emoji:gi('eemoji').value||'📄',
+    date:gi('edate').value, author:gi('eauthor').value,
+    featured:gi('efeat').value==='true',
+    summary, content,
+    _isNew: isNew
+  };
+  try {
+    await saveArtToDb(art);
+    ARTS = await loadArts();
+    toast(isNew?'새 기사가 등록되었습니다!':'기사가 수정되었습니다!','ok');
+    setTimeout(()=>go('plist',null), 600);
+  } catch(e){
+    toast('저장 중 오류: '+e.message,'err');
+  }
+}
+function toggleSrc(){
+  srcMode=!srcMode;
+  if(srcMode){
+    gi('csrc').value=gi('cedit').innerHTML;
+    gi('cedit').style.display='none'; gi('csrc').style.display='block';
+  } else {
+    gi('cedit').innerHTML=gi('csrc').value;
+    gi('csrc').style.display='none'; gi('cedit').style.display='block';
+  }
+}
+function fmt(cmd){ gi('cedit').focus(); document.execCommand(cmd,false,null); }
+function iTag(tag){ gi('cedit').focus(); document.execCommand('formatBlock',false,'<'+tag+'>'); }
+function prevArt(){
+  gi('pvcat').textContent=gi('ecat').value;
+  gi('pvtitle').textContent=gi('etitle').value;
+  gi('pvmeta').textContent='📅 '+(gi('edate').value||'').replace(/-/g,'.')+' ✍️ '+gi('eauthor').value;
+  gi('pvcontent').innerHTML=srcMode?gi('csrc').value:gi('cedit').innerHTML;
+  gi('prevOv').style.display='block';
+}
+
+/* ══ 삭제 ══ */
+let delId=null;
+function askDel(id,title){
+  delId=id;
+  gi('confMsg').textContent=`"${title}" 기사를 삭제하시겠습니까? 되돌릴 수 없습니다.`;
+  gi('confDel').classList.add('open');
+}
+function closeConf(){ gi('confDel').classList.remove('open'); delId=null; }
+async function doDelete(){
+  if(!delId) return;
+  try {
+    await deleteArtFromDb(delId);
+    ARTS = await loadArts();
+    closeConf(); renderTbl(); renderDash();
+    toast('기사가 삭제되었습니다.','ok');
+  } catch(e){ toast('삭제 오류: '+e.message,'err'); }
+}
+
+/* ══ 설정 ══ */
+function loadSettingForm(){
+  const d=getSetting();
+  gi('sttl').value=d.title||''; gi('svol').value=d.vol||'';
+  gi('sadr').value=d.addr||''; gi('stel').value=d.tel||'';
+  gi('sfax').value=d.fax||'';  gi('seml').value=d.email||'';
+  gi('sweb').value=d.web||'';  gi('sa1').value=d.acc1||'';
+  gi('sa2').value=d.acc2||'';  gi('san').value=d.accName||'';
+  gi('sdt').value=d.donTel||'';
+}
+function getSetting(){
+  const def={title:'월출어람',vol:'VOL. 2호',addr:'전라남도 영암군 영암읍 오리정길 37',
+    tel:'061-470-6743',fax:'061-470-6769',email:'yasg2025@naver.com',web:'www.yajb.org',
+    acc1:'광주은행 1107-021-791537',acc2:'광주은행 1107-021-791571',
+    accName:'영암군장애인종합복지관',donTel:'061-470-6743'};
+  try{ return Object.assign(def,JSON.parse(localStorage.getItem('wc_set')||'{}')); }
+  catch{ return def; }
+}
+function saveSetting(){
+  const s={title:gi('sttl').value,vol:gi('svol').value,addr:gi('sadr').value,
+    tel:gi('stel').value,fax:gi('sfax').value,email:gi('seml').value,web:gi('sweb').value,
+    acc1:gi('sa1').value,acc2:gi('sa2').value,accName:gi('san').value,donTel:gi('sdt').value};
+  localStorage.setItem('wc_set',JSON.stringify(s));
+  toast('설정이 저장되었습니다.','ok');
+}
+
+/* ══ 비밀번호 ══ */
+function chgPw(){
+  const cur=gi('pwc').value, nw=gi('pwn').value, nw2=gi('pwn2').value;
+  if(cur!==creds().pw){ toast('현재 비밀번호가 틀립니다.','err'); return; }
+  if(nw.length<6){ toast('새 비밀번호는 6자 이상이어야 합니다.','err'); return; }
+  if(nw!==nw2){ toast('새 비밀번호가 일치하지 않습니다.','err'); return; }
+  localStorage.setItem('adm_pw',nw);
+  ['pwc','pwn','pwn2'].forEach(id=>gi(id).value='');
+  toast('비밀번호가 변경되었습니다.','ok');
+}
+
+/* ══ 유틸 ══ */
+function gi(id){ return document.getElementById(id); }
+function ls(k){ return localStorage.getItem(k); }
+let toastT=null;
+function toast(msg,type=''){
+  const el=gi('toast');
+  el.textContent=msg; el.className='toast '+(type||'');
+  requestAnimationFrame(()=>el.classList.add('show'));
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>el.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
