@@ -378,9 +378,9 @@ footer{background:var(--navy);color:rgba(255,255,255,.72);padding:38px 20px 24px
 <!-- 히어로 -->
 <section class="hero" aria-label="소식지 소개">
   <div class="hero-in">
-    <div class="vol-badge" id="volBadge">VOL. 2호 · 2026년 소식지</div>
+    <div class="vol-badge">VOL. 2호 · 2025년 하반기 소식지</div>
     <h1>월출<em>어람</em></h1>
-    <p class="hero-sub" id="heroSub">우리 복지관의 소식으로 가득 채운 이야기</p>
+    <p class="hero-sub">우리 복지관의 소식으로 가득 채운 이야기</p>
     <p class="hero-desc">
       사회복지법인 전남밀알복지재단 · 영암군장애인종합복지관<br>
       전라남도 영암군 영암읍 오리정길 37 &nbsp;|&nbsp; T 061-470-6743
@@ -821,19 +821,6 @@ function fmt(d) { return (d||'').replace(/-/g,'.'); }
   const hi = localStorage.getItem('wc_hi') === '1';
   if(fz && fz !== 'n') setFz(fz);
   if(hi) setHi(true);
-
-  // admin에서 저장한 기관 정보 반영
-  try {
-    const s = JSON.parse(localStorage.getItem('wc_set') || '{}');
-    if(s.vol || s.title) {
-      const badge = document.getElementById('volBadge');
-      if(badge && s.vol) badge.textContent = s.vol + ' · 2026년 소식지';
-    }
-    if(s.subtitle) {
-      const sub = document.getElementById('heroSub');
-      if(sub) sub.textContent = s.subtitle;
-    }
-  } catch(e) {}
 })();
 </script>
 </body>
