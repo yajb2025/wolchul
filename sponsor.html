@@ -4,6 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>후원 신청 | 월출어람 영암군장애인종합복지관</title>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const FC = {
+  apiKey:"AIzaSyDixmWj8Ah9vzACGZ6DfL5hAP9sC-H-5Ig",
+  authDomain:"jjjj-6742.firebaseapp.com",
+  projectId:"jjjj-6742",
+  storageBucket:"jjjj-6742.firebasestorage.app",
+  messagingSenderId:"61243262608",
+  appId:"1:61243262608:web:5e9139eb2345fbaf01fa15"
+};
+try {
+  const app = initializeApp(FC);
+  const db = getFirestore(app);
+  window.__spDb = db;
+  window.__spCol = collection;
+  window.__spAdd = addDoc;
+} catch(e){ console.warn("Firebase 오류:", e.message); }
+</script>
 <style>
 :root{
   --sky:#5bb8e8;--sky-d:#2d88b5;--sky-l:#e8f6fd;
@@ -472,7 +491,7 @@ canvas.addEventListener('touchend', ()=>drawing=false);
 function clearSig(){ ctx.clearRect(0,0,canvas.width,canvas.height); }
 
 /* 제출 */
-function submitForm() {
+async async function submitForm() {
   const name  = document.getElementById('dName').value.trim();
   const phone = document.getElementById('dPhone').value.trim();
   if(!name)  { alert('기부자명을 입력해 주세요.'); document.getElementById('dName').focus(); return; }
@@ -506,6 +525,34 @@ function submitForm() {
     document.getElementById(id).classList.add('done');
   });
   ['l1','l2'].forEach(id=>document.getElementById(id).classList.add('done'));
+
+  // Firebase에 저장
+  const amount = curType==='regular'
+    ? (selAmt==='custom' ? document.getElementById('customAmt').value : selAmt)
+    : (curType==='once' ? document.getElementById('onceAmt').value : '');
+  const spData = {
+    type: curType,
+    name: document.getElementById('dName').value.trim(),
+    phone: document.getElementById('dPhone').value.trim(),
+    email: document.getElementById('dEmail').value.trim(),
+    birth: document.getElementById('dBirth').value.trim(),
+    addr: document.getElementById('dAddr').value.trim(),
+    amount: amount,
+    payMethod: curType==='regular' ? document.getElementById('payMethod').value : '',
+    message: document.getElementById('message').value.trim(),
+    status: '신청',
+    createdAt: new Date().toISOString()
+  };
+  if(window.__spDb && window.__spAdd && window.__spCol) {
+    try { await window.__spAdd(window.__spCol(window.__spDb,'sponsors'), spData); console.log('Firebase 저장 완료'); }
+    catch(e) { console.warn('Firebase 저장 오류:', e.message); saveLocal(spData); }
+  } else { saveLocal(spData); }
+}
+
+function saveLocal(data) {
+  const arr = JSON.parse(localStorage.getItem('wolchul_sponsors')||'[]');
+  arr.unshift({id:'sp_'+Date.now(),...data});
+  localStorage.setItem('wolchul_sponsors', JSON.stringify(arr));
 }
 
 function resetForm() {
