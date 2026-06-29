@@ -349,7 +349,7 @@ footer{background:var(--navy);color:rgba(255,255,255,.72);padding:38px 20px 24px
       <div class="logo-i" aria-hidden="true">
         <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z"/></svg>
       </div>
-      <div><strong>월출어람</strong><span>영암군장애인종합복지관 소식지</span></div>
+      <div><strong id="siteTitle">월출어람</strong><span id="siteSubtitle">영암군장애인종합복지관 소식지</span></div>
     </a>
     <nav class="hnav" role="navigation" aria-label="주 메뉴">
       <a href="index.html" class="on" aria-current="page">소식지 홈</a>
@@ -378,10 +378,10 @@ footer{background:var(--navy);color:rgba(255,255,255,.72);padding:38px 20px 24px
 <!-- 히어로 -->
 <section class="hero" aria-label="소식지 소개">
   <div class="hero-in">
-    <div class="vol-badge">VOL. 2호 · 2025년 하반기 소식지</div>
-    <h1>월출<em>어람</em></h1>
-    <p class="hero-sub">우리 복지관의 소식으로 가득 채운 이야기</p>
-    <p class="hero-desc">
+    <div class="vol-badge" id="volBadge">VOL. 2호 · 2026년 소식지</div>
+    <h1 id="heroTitle">월출<em id="heroTitleEm">어람</em></h1>
+    <p class="hero-sub" id="heroSub">우리 복지관의 소식으로 가득 채운 이야기</p>
+    <p class="hero-desc" id="heroDesc">
       사회복지법인 전남밀알복지재단 · 영암군장애인종합복지관<br>
       전라남도 영암군 영암읍 오리정길 37 &nbsp;|&nbsp; T 061-470-6743
     </p>
@@ -454,8 +454,8 @@ footer{background:var(--navy);color:rgba(255,255,255,.72);padding:38px 20px 24px
     <p>여러분의 소중한 후원이 영암군 장애인의 더 나은 삶을 만들어갑니다.<br>
        연말정산 기부금 영수증이 자동 발급됩니다.</p>
     <div class="sp-accs">
-      <div class="sp-acc">🏦 비지정후원 · 광주은행 1107-021-791537</div>
-      <div class="sp-acc">🏦 지정후원 &nbsp;· 광주은행 1107-021-791571</div>
+      <div class="sp-acc" id="ftAcc1">🏦 비지정후원 · 광주은행 1107-021-791537</div>
+      <div class="sp-acc" id="ftAcc2">🏦 지정후원  · 광주은행 1107-021-791571</div>
     </div>
     <p style="font-size:.75rem;opacity:.82;margin-bottom:16px">
       예금주: 영암군장애인종합복지관 &nbsp;|&nbsp; 문의: 061-470-6743
@@ -821,6 +821,51 @@ function fmt(d) { return (d||'').replace(/-/g,'.'); }
   const hi = localStorage.getItem('wc_hi') === '1';
   if(fz && fz !== 'n') setFz(fz);
   if(hi) setHi(true);
+
+  // admin 기관정보 → 웹진 자동 반영
+  try {
+    const s = JSON.parse(localStorage.getItem('wc_set') || '{}');
+
+    // 소식지 제목 (헤더 + 히어로)
+    if(s.title) {
+      const el1 = document.getElementById('siteTitle');
+      const el2 = document.getElementById('heroTitle');
+      if(el1) el1.textContent = s.title;
+      if(el2) el2.innerHTML = s.title + '<em id="heroTitleEm"></em>';
+    }
+
+    // 호수 배지
+    if(s.vol) {
+      const badge = document.getElementById('volBadge');
+      if(badge) badge.textContent = s.vol + ' · 2026년 소식지';
+    }
+
+    // 부제목
+    if(s.subtitle) {
+      const sub = document.getElementById('heroSub');
+      if(sub) sub.textContent = s.subtitle;
+    }
+
+    // 기관 연락처
+    if(s.addr || s.tel) {
+      const desc = document.getElementById('heroDesc');
+      if(desc) {
+        desc.innerHTML = '사회복지법인 전남밀알복지재단 · 영암군장애인종합복지관<br>'
+          + (s.addr || '전라남도 영암군 영암읍 오리정길 37')
+          + ' &nbsp;|&nbsp; T ' + (s.tel || '061-470-6743');
+      }
+    }
+
+    // 푸터 후원 계좌
+    if(s.acc1) {
+      const a1 = document.getElementById('ftAcc1');
+      if(a1) a1.textContent = '🏦 비지정후원 · ' + s.acc1;
+    }
+    if(s.acc2) {
+      const a2 = document.getElementById('ftAcc2');
+      if(a2) a2.textContent = '🏦 지정후원  · ' + s.acc2;
+    }
+  } catch(e) {}
 })();
 </script>
 </body>

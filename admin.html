@@ -419,6 +419,7 @@ input,select,textarea{font-family:inherit}
             <h3>📍 기본 정보</h3>
             <div class="sf"><label>소식지 제목</label><input id="sttl" placeholder="월출어람"></div>
             <div class="sf"><label>호수</label><input id="svol" placeholder="VOL. 2호"></div>
+            <div class="sf"><label>부제목</label><input id="ssub" placeholder="우리 복지관의 소식으로 가득 채운 이야기"></div>
             <div class="sf"><label>주소</label><input id="sadr"></div>
             <div class="sf"><label>전화</label><input id="stel"></div>
             <div class="sf"><label>팩스</label><input id="sfax"></div>
@@ -873,13 +874,13 @@ function getSetting(){
 }
 function loadSetForm(){
   const s=getSetting();
-  gi('sttl').value=s.title||''; gi('svol').value=s.vol||''; gi('sadr').value=s.addr||'';
+  gi('sttl').value=s.title||''; gi('svol').value=s.vol||''; gi('ssub').value=s.subtitle||''; gi('sadr').value=s.addr||'';
   gi('stel').value=s.tel||''; gi('sfax').value=s.fax||''; gi('seml').value=s.email||'';
   gi('sweb').value=s.web||''; gi('sa1').value=s.acc1||''; gi('sa2').value=s.acc2||'';
   gi('san').value=s.accName||''; gi('sdt').value=s.donTel||'';
 }
 function saveSetting(){
-  const s={title:gi('sttl').value,vol:gi('svol').value,addr:gi('sadr').value,
+  const s={title:gi('sttl').value,vol:gi('svol').value,subtitle:gi('ssub').value,addr:gi('sadr').value,
     tel:gi('stel').value,fax:gi('sfax').value,email:gi('seml').value,web:gi('sweb').value,
     acc1:gi('sa1').value,acc2:gi('sa2').value,accName:gi('san').value,donTel:gi('sdt').value};
   localStorage.setItem('wc_set',JSON.stringify(s)); toast('설정이 저장되었습니다.','ok');
