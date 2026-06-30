@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>후원 신청 | 월출어람 영암군장애인종합복지관</title>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const FC={apiKey:"AIzaSyDixmWj8Ah9vzACGZ6DfL5hAP9sC-H-5Ig",authDomain:"jjjj-6742.firebaseapp.com",
+  projectId:"jjjj-6742",storageBucket:"jjjj-6742.firebasestorage.app",
+  messagingSenderId:"61243262608",appId:"1:61243262608:web:5e9139eb2345fbaf01fa15"};
+try{const app=initializeApp(FC);const db=getFirestore(app);
+  window.__spDb=db;window.__spCol=collection;window.__spAdd=addDoc;
+}catch(e){console.warn("Firebase:",e.message);}
+</script>
+<style>
+:root{
+  --c1:#1b4332;--c2:#2d6a4f;--c3:#40916c;--c4:#74c69d;
+  --c-pale:#d8f3dc;--c-light:#f0faf2;
+  --acc:#f77f00;--acc-l:#fff3e0;
+  --ink:#1a1a1a;--ink-m:#3d3d3d;--ink-s:#6b7280;
+  --paper:#fafaf8;--white:#fff;--line:#e5e7eb;
+  --r:8px;--r-l:14px;--sh:0 2px 16px rgba(27,67,50,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  background:var(--paper);color:var(--ink);line-height:1.72}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+
+/* 상단 바 */
+.topbar{background:var(--c1);color:rgba(255,255,255,.7);font-size:.72rem;
+  padding:7px 32px;display:flex;align-items:center;gap:16px}
+.topbar span{display:flex;align-items:center;gap:5px}
+.tb-right{margin-left:auto}
+.tb-right a{color:rgba(255,255,255,.7);margin-left:14px}
+.tb-right a:hover{color:#fff}
+
+/* 헤더 */
+#hd{background:var(--white);border-bottom:1px solid var(--line);
+  box-shadow:0 1px 10px rgba(0,0,0,.05);position:sticky;top:0;z-index:100}
+.hw{max-width:900px;margin:0 auto;padding:0 24px;height:66px;
+  display:flex;align-items:center;gap:14px}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:42px;height:42px;background:var(--c1);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark svg{width:24px;height:24px;fill:#fff}
+.logo-ko{font-size:1rem;font-weight:900;color:var(--c1)}
+.logo-en{font-size:.6rem;color:var(--ink-s);letter-spacing:.1em;text-transform:uppercase}
+.back-btn{margin-left:auto;background:none;border:1.5px solid var(--line);
+  color:var(--ink-s);border-radius:var(--r);padding:7px 16px;
+  font-size:.78rem;font-weight:600;transition:all .18s}
+.back-btn:hover{border-color:var(--c1);color:var(--c1)}
+
+/* 히어로 */
+.hero{background:var(--c1);padding:44px 24px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 50%,rgba(64,145,108,.35) 0%,transparent 60%)}
+.hero-in{position:relative;z-index:1}
+.hero h1{font-size:1.75rem;font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:-.03em}
+.hero h1 em{color:var(--c4);font-style:normal}
+.hero p{font-size:.88rem;color:rgba(255,255,255,.8);line-height:1.7}
+
+/* 메인 */
+main{max-width:720px;margin:0 auto;padding:32px 24px 64px}
+
+/* 단계 */
+.steps{display:flex;align-items:center;margin-bottom:26px}
+.step{display:flex;align-items:center;gap:7px;flex:1}
+.sn{width:26px;height:26px;border-radius:50%;background:var(--line);
+  color:var(--ink-s);font-size:.75rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
+.step.on .sn{background:var(--c1);color:#fff}
+.step.done .sn{background:var(--c3);color:#fff}
+.sl{font-size:.75rem;color:var(--ink-s);font-weight:600}
+.step.on .sl{color:var(--c1)}
+.sline{flex:1;height:2px;background:var(--line);margin:0 6px;transition:background .3s}
+.sline.done{background:var(--c3)}
+
+/* 카드 */
+.card{background:var(--white);border-radius:var(--r-l);border:1px solid var(--line);
+  padding:24px;box-shadow:var(--sh);margin-bottom:14px}
+.card-title{font-size:.92rem;font-weight:800;color:var(--c1);
+  margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px}
+.num-badge{width:22px;height:22px;border-radius:50%;background:var(--c1);
+  color:#fff;font-size:.68rem;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* 폼 */
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:.75rem;font-weight:700;color:var(--ink-m);margin-bottom:5px}
+.req{color:#c0392b}
+.fg input,.fg select,.fg textarea{
+  width:100%;border:1.5px solid var(--line);border-radius:var(--r);
+  padding:10px 13px;font-size:.86rem;color:var(--ink);
+  background:var(--paper);outline:none;transition:border .2s;font-family:inherit}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--c1);background:var(--white)}
+.fg textarea{resize:vertical;min-height:80px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.fg-hint{font-size:.7rem;color:var(--ink-s);margin-top:4px}
+
+/* 유형 카드 */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+.type-card{border:2px solid var(--line);border-radius:var(--r-l);padding:16px;
+  cursor:pointer;transition:all .2s;background:var(--white);text-align:center;
+  user-select:none;pointer-events:auto}
+.type-card:hover{border-color:var(--c3);background:var(--c-light)}
+.type-card.on{border-color:var(--c1);background:var(--c-light)}
+.type-ico{font-size:1.6rem;margin-bottom:6px;pointer-events:none}
+.type-name{font-size:.82rem;font-weight:800;color:var(--ink);pointer-events:none;transition:color .2s}
+.type-sub{font-size:.68rem;color:var(--ink-s);margin-top:2px;pointer-events:none}
+.type-card.on .type-name{color:var(--c1)}
+
+/* 금액 버튼 */
+.amt-grid{display:flex;flex-wrap:wrap;gap:7px}
+.amt-btn{border:1.5px solid var(--line);background:var(--white);
+  color:var(--ink-m);border-radius:var(--r);padding:7px 15px;
+  font-size:.8rem;font-weight:700;transition:all .18s}
+.amt-btn:hover{border-color:var(--c1);color:var(--c1)}
+.amt-btn.on{background:var(--c1);border-color:var(--c1);color:#fff}
+
+/* 계좌 안내 카드 */
+.acc-select-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+.acc-radio-card{border:2px solid var(--line);border-radius:var(--r);padding:14px;
+  cursor:pointer;transition:all .18s;background:var(--white)}
+.acc-radio-card:hover{border-color:var(--c3)}
+.acc-radio-card.on{border-color:var(--c1);background:var(--c-light)}
+.acc-radio-top{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:800;color:var(--ink);margin-bottom:4px}
+.acc-radio-card.on .acc-radio-top{color:var(--c1)}
+.acc-radio-num{font-size:.86rem;font-weight:900;color:var(--c2);font-family:monospace;letter-spacing:-.02em}
+.acc-radio-name{font-size:.68rem;color:var(--ink-s);margin-top:3px}
+.acc-box{background:var(--acc-l);border:1.5px solid var(--acc);
+  border-radius:var(--r);padding:14px 16px;margin-bottom:14px;
+  display:flex;align-items:flex-start;gap:10px}
+.acc-box p{font-size:.8rem;color:#7a4400;line-height:1.65}
+.acc-box strong{font-weight:800;color:#5a3000;display:block}
+
+/* 영수증 설정 */
+.receipt-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px}
+.receipt-opt{border:1.5px solid var(--line);border-radius:var(--r);padding:10px;
+  text-align:center;cursor:pointer;transition:all .18s;background:var(--white);font-size:.76rem;font-weight:700;color:var(--ink-m)}
+.receipt-opt:hover{border-color:var(--c3)}
+.receipt-opt.on{border-color:var(--c1);background:var(--c-light);color:var(--c1)}
+
+/* 동의 */
+.agree-box{background:var(--c-light);border:1px solid var(--c-pale);
+  border-radius:var(--r);padding:14px;margin-bottom:12px}
+.agree-title{font-size:.8rem;font-weight:800;color:var(--c1);margin-bottom:8px}
+.agree-tbl{width:100%;border-collapse:collapse;font-size:.71rem;color:var(--ink-m);margin-bottom:10px}
+.agree-tbl th{background:var(--c-pale);color:var(--c2);font-weight:700;
+  padding:6px 10px;border:1px solid var(--c-pale);text-align:left}
+.agree-tbl td{padding:6px 10px;border:1px solid #cce8d4;vertical-align:top}
+.agree-check{display:flex;align-items:center;gap:8px;
+  font-size:.8rem;font-weight:600;cursor:pointer}
+.agree-check input{width:16px;height:16px;accent-color:var(--c1)}
+.agree-note{font-size:.71rem;color:var(--ink-s);line-height:1.6;margin-bottom:10px;
+  padding:8px 10px;background:rgba(255,255,255,.6);border-radius:6px;border-left:3px solid var(--c3)}
+.agree-optional{background:#fafafa;border:1px solid var(--line)}
+.agree-optional .agree-title{color:var(--ink-m)}
+.policy-link-box{background:var(--c-light);border:1px solid var(--c-pale);border-radius:var(--r);
+  padding:12px 16px;font-size:.78rem;color:var(--ink-m);margin-bottom:16px;line-height:1.7}
+.policy-link-box a{color:var(--c1);font-weight:700;text-decoration:underline}
+
+/* 서명 */
+.sig-wrap{border:1.5px solid var(--line);border-radius:var(--r);
+  overflow:hidden;background:#fafaf8}
+.sig-wrap canvas{display:block;width:100%;height:110px;cursor:crosshair;touch-action:none}
+.sig-actions{display:flex;justify-content:space-between;align-items:center;margin-top:7px}
+.btn-sig{background:none;border:1.5px solid var(--line);color:var(--ink-s);
+  border-radius:var(--r);padding:5px 14px;font-size:.75rem;transition:all .18s}
+.btn-sig:hover{border-color:#c0392b;color:#c0392b}
+.btn-sig-copy{background:none;border:1.5px solid var(--c3);color:var(--c2);
+  border-radius:var(--r);padding:5px 14px;font-size:.75rem;transition:all .18s}
+.btn-sig-copy:hover{background:var(--c-light)}
+
+/* 스팸방지 */
+.captcha-box{background:var(--c-light);border:1.5px solid var(--c-pale);border-radius:var(--r);
+  padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.captcha-q{font-size:.9rem;font-weight:800;color:var(--c1);white-space:nowrap}
+.captcha-box input{max-width:100px}
+
+/* 제출 */
+.submit-wrap{text-align:center;margin-top:24px}
+.btn-submit{background:var(--c1);color:#fff;border:none;border-radius:var(--r);
+  padding:14px 48px;font-size:.96rem;font-weight:800;
+  box-shadow:0 4px 18px rgba(27,67,50,.3);transition:all .18s}
+.btn-submit:hover{background:var(--c2);transform:translateY(-1px)}
+.btn-submit:disabled{background:var(--line);color:var(--ink-s);box-shadow:none;cursor:not-allowed;transform:none}
+
+/* 완료 화면 */
+.success{display:none;background:var(--white);border-radius:var(--r-l);
+  border:1px solid var(--line);padding:48px 28px;text-align:center;box-shadow:var(--sh)}
+.success-ico{font-size:3.2rem;margin-bottom:16px}
+.success h2{font-size:1.4rem;font-weight:900;color:var(--c1);margin-bottom:8px}
+.success p{font-size:.86rem;color:var(--ink-s);margin-bottom:22px;line-height:1.7}
+.success-summary{background:var(--c-light);border:1px solid var(--c-pale);
+  border-radius:var(--r);padding:16px;text-align:left;font-size:.83rem;margin-bottom:22px;line-height:2}
+.success-summary strong{color:var(--c1)}
+.success-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-back{background:var(--white);border:2px solid var(--c1);color:var(--c1);
+  border-radius:var(--r);padding:10px 22px;font-size:.83rem;font-weight:700;transition:all .18s}
+.btn-back:hover{background:var(--c1);color:#fff}
+.btn-again{background:var(--c1);color:#fff;border:none;
+  border-radius:var(--r);padding:10px 22px;font-size:.83rem;font-weight:700;transition:opacity .18s}
+.btn-again:hover{opacity:.85}
+
+/* 푸터 */
+footer{background:#0d2818;color:rgba(255,255,255,.6);padding:32px 24px;text-align:center;font-size:.74rem;line-height:2}
+footer strong{color:#fff}
+footer a{color:rgba(255,255,255,.7);text-decoration:underline}
+
+@media(max-width:560px){
+  .type-grid{grid-template-columns:1fr 1fr}
+  .row2,.row3{grid-template-columns:1fr}
+  .acc-select-grid{grid-template-columns:1fr}
+  .receipt-grid{grid-template-columns:1fr}
+  .hero h1{font-size:1.4rem}
+  .steps .sl{display:none}
+  .topbar{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- 상단 바 -->
+<div class="topbar">
+  <span>📍 전라남도 영암군 영암읍 오리정길 37</span>
+  <span>📞 061-470-6743</span>
+  <div class="tb-right">
+    <a href="index.html">웹진 홈</a>
+    <a href="admin.html">관리자</a>
+  </div>
+</div>
+
+<!-- 헤더 -->
+<header id="hd">
+  <div class="hw">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 2-8 2s5-2 5-8c-3 3-6 3-8 3 0-2-1-4-3-4C4 3 4 8 8 8 5 9 4 14 4 14s-1-5 3-6z"/></svg>
+      </div>
+      <div>
+        <div class="logo-ko" id="spTitle">월출어람</div>
+        <div class="logo-en">Yeongam Welfare Center</div>
+      </div>
+    </a>
+    <button class="back-btn" onclick="location.href='index.html'">← 웹진으로</button>
+  </div>
+</header>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-in">
+    <h1>💚 영암군장애인종합복지관과 함께하는<br>따뜻한 나눔</h1>
+    <p>여러분의 따뜻한 관심과 후원은 장애인의 행복한 일상과 자립을 돕는<br>
+    든든한 밑거름이 됩니다. 보내주신 정성스러운 손길은<br>
+    이용인의 복지 증진을 위해 투명하게 사용됩니다.</p>
+  </div>
+</section>
+
+<main>
+  <!-- 단계 -->
+  <div class="steps">
+    <div class="step on" id="s1"><div class="sn">1</div><span class="sl">유형 선택</span></div>
+    <div class="sline" id="l1"></div>
+    <div class="step" id="s2"><div class="sn">2</div><span class="sl">신청인 정보</span></div>
+    <div class="sline" id="l2"></div>
+    <div class="step" id="s3"><div class="sn">3</div><span class="sl">납부 및 동의서명</span></div>
+  </div>
+
+  <div id="formWrap">
+
+    <!-- 1. 유형 선택 -->
+    <div class="card">
+      <div class="card-title"><div class="num-badge">1</div>후원 및 자원봉사 유형 선택</div>
+      <div class="fg">
+        <label>신청할 유형을 선택해 주세요 <span class="req">*</span></label>
+        <div class="type-grid">
+          <div class="type-card on" onclick="selectType(event.currentTarget,'regular')" role="button" tabindex="0">
+            <div class="type-ico">💳</div>
+            <div class="type-name">정기 후원</div>
+            <div class="type-sub">매달 정기적 기부</div>
+          </div>
+          <div class="type-card" onclick="selectType(event.currentTarget,'once')" role="button" tabindex="0">
+            <div class="type-ico">🎁</div>
+            <div class="type-name">일시 후원</div>
+            <div class="type-sub">원할 때 일시 기부</div>
+          </div>
+          <div class="type-card" onclick="selectType(event.currentTarget,'goods')" role="button" tabindex="0">
+            <div class="type-ico">📦</div>
+            <div class="type-name">물품 후원</div>
+            <div class="type-sub">생필품·도서 기증</div>
+          </div>
+          <div class="type-card" onclick="selectType(event.currentTarget,'vol')" role="button" tabindex="0">
+            <div class="type-ico">🙌</div>
+            <div class="type-name">자원봉사</div>
+            <div class="type-sub">재능기부·노력봉사</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 정기 후원 -->
+      <div id="f-regular">
+        <div class="fg">
+          <label>정기 후원 금액 <span class="req">*</span></label>
+          <div class="amt-grid">
+            <button type="button" class="amt-btn" onclick="setAmt(this,'10000')">매월 10,000원</button>
+            <button type="button" class="amt-btn" onclick="setAmt(this,'20000')">매월 20,000원</button>
+            <button type="button" class="amt-btn on" onclick="setAmt(this,'30000')">매월 30,000원</button>
+            <button type="button" class="amt-btn" onclick="setAmt(this,'50000')">매월 50,000원</button>
+            <button type="button" class="amt-btn" onclick="setAmt(this,'100000')">매월 100,000원</button>
+            <button type="button" class="amt-btn" onclick="setAmt(this,'custom')">직접 기입</button>
+          </div>
+        </div>
+        <div class="fg" id="customAmtWrap" style="display:none">
+          <label>정기 후원 금액 직접 입력 (원) <span class="req">*</span></label>
+          <input type="number" id="customAmt" placeholder="금액 입력">
+        </div>
+
+        <div class="fg">
+          <label>입금 계좌 선택 <span class="req">*</span></label>
+          <div class="acc-select-grid">
+            <div class="acc-radio-card on" onclick="selectAcc(event.currentTarget,'undesignated')" role="button" tabindex="0">
+              <div class="acc-radio-top">💚 비지정후원</div>
+              <div class="acc-radio-num">광주은행 1107-021-791537</div>
+              <div class="acc-radio-name">예금주: 영암군장애인종합복지관</div>
+            </div>
+            <div class="acc-radio-card" onclick="selectAcc(event.currentTarget,'designated')" role="button" tabindex="0">
+              <div class="acc-radio-top">🎯 지정후원</div>
+              <div class="acc-radio-num">광주은행 1107-021-791571</div>
+              <div class="acc-radio-name">예금주: 영암군장애인종합복지관</div>
+            </div>
+          </div>
+          <p class="fg-hint">비지정후원은 복지관 운영 전반에, 지정후원은 신청 시 안내드리는 특정 사업에 사용됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 일시 후원 -->
+      <div id="f-once" style="display:none">
+        <div class="fg">
+          <label>입금 계좌 선택 <span class="req">*</span></label>
+          <div class="acc-select-grid">
+            <div class="acc-radio-card on" onclick="selectAcc(event.currentTarget,'undesignated')" role="button" tabindex="0">
+              <div class="acc-radio-top">💚 비지정후원</div>
+              <div class="acc-radio-num">광주은행 1107-021-791537</div>
+              <div class="acc-radio-name">예금주: 영암군장애인종합복지관</div>
+            </div>
+            <div class="acc-radio-card" onclick="selectAcc(event.currentTarget,'designated')" role="button" tabindex="0">
+              <div class="acc-radio-top">🎯 지정후원</div>
+              <div class="acc-radio-num">광주은행 1107-021-791571</div>
+              <div class="acc-radio-name">예금주: 영암군장애인종합복지관</div>
+            </div>
+          </div>
+        </div>
+        <div class="acc-box">
+          <span style="font-size:1.4rem">🏦</span>
+          <p>위 시설 대표 계좌로 송금해 주시면 확인 후 접수 처리됩니다.<br>입금자명은 신청인(기부자)명과 동일하게 해주시면 확인이 빠릅니다.</p>
+        </div>
+        <div class="fg">
+          <label>일시 후원 금액 (원) <span class="req">*</span></label>
+          <input type="number" id="onceAmt" placeholder="후원 금액 입력">
+        </div>
+      </div>
+
+      <!-- 물품 후원 -->
+      <div id="f-goods" style="display:none">
+        <div class="fg">
+          <label>후원하실 물품 정보 (품목 및 수량) <span class="req">*</span></label>
+          <textarea id="goodsInfo" placeholder="예: 쌀 10kg × 2포, 생활용품 세트 5개 등"></textarea>
+        </div>
+        <div class="fg">
+          <label>후원 물품 환산 금액 (원) <span style="color:var(--ink-s);font-weight:400">(선택사항)</span></label>
+          <input type="number" id="goodsAmt" placeholder="대략적인 금액(선택)">
+        </div>
+      </div>
+
+      <!-- 자원봉사 -->
+      <div id="f-vol" style="display:none">
+        <div class="fg">
+          <label>봉사 가능 일정 및 내용 <span class="req">*</span></label>
+          <textarea id="volInfo" placeholder="예: 매주 토요일 오전 / 미술 재능기부 봉사 희망"></textarea>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>전하고 싶은 말씀</label>
+        <textarea id="message" placeholder="전달 사항이나 문의 사항을 자유롭게 작성해 주세요."></textarea>
+      </div>
+    </div>
+
+    <!-- 2. 신청인 정보 -->
+    <div class="card">
+      <div class="card-title"><div class="num-badge">2</div>신청인(기부자) 정보 입력</div>
+      <div class="row2">
+        <div class="fg">
+          <label>기부자명 / 단체명 <span class="req">*</span></label>
+          <input type="text" id="dName" placeholder="이름 또는 단체명">
+        </div>
+        <div class="fg">
+          <label>연락처 <span class="req">*</span></label>
+          <input type="tel" id="dPhone" placeholder="010-0000-0000">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="fg">
+          <label>이메일 주소</label>
+          <input type="email" id="dEmail" placeholder="example@email.com">
+        </div>
+        <div class="fg">
+          <label>팩스 번호 <span style="color:var(--ink-s);font-weight:400">(선택)</span></label>
+          <input type="text" id="dFax" placeholder="061-000-0000">
+        </div>
+      </div>
+      <div class="fg">
+        <label>주소 구분</label>
+        <select id="dAddrType">
+          <option value="자택">자택</option>
+          <option value="직장">직장</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>주소 <span style="color:var(--ink-s);font-weight:400">(기부금 영수증 우편 발송 희망 시 입력)</span></label>
+        <input type="text" id="dAddr" placeholder="주소 입력 (선택사항)">
+      </div>
+    </div>
+
+    <!-- 3. 납부 방법 및 동의·서명 -->
+    <div class="card">
+      <div class="card-title"><div class="num-badge">3</div>납부 방법 및 동의·서명</div>
+
+      <!-- 영수증 발급 설정 -->
+      <div class="fg">
+        <label>소득공제용 기부금 영수증 발행 설정</label>
+        <div class="receipt-grid">
+          <div class="receipt-opt on" onclick="selectReceipt(event.currentTarget,'personal')">개인용</div>
+          <div class="receipt-opt" onclick="selectReceipt(event.currentTarget,'org')">사업자/단체용</div>
+          <div class="receipt-opt" onclick="selectReceipt(event.currentTarget,'none')">발행 불필요</div>
+        </div>
+        <p class="fg-hint" id="receiptHint">개인용 선택 시 생년월일 입력이 필요합니다. (주민등록번호 뒷자리는 수집하지 않습니다)</p>
+      </div>
+      <div class="fg" id="receiptIdWrap">
+        <label>생년월일 <span class="req">*</span></label>
+        <input type="text" id="dBirth" placeholder="예: 19800101 (8자리)" maxlength="8" inputmode="numeric">
+        <p class="fg-hint">생년월일 8자리만 입력해 주세요. 주민등록번호 뒷자리는 수집하지 않습니다.</p>
+      </div>
+
+      <!-- 필수 - 수집·이용 동의 -->
+      <div class="agree-box">
+        <div class="agree-title">[필수] 개인정보 수집 및 이용 동의</div>
+        <table class="agree-tbl">
+          <thead><tr><th>수집 항목</th><th>수집 목적</th><th>보유·이용 기간</th></tr></thead>
+          <tbody><tr>
+            <td>필수: 이름, 연락처<br>선택: 이메일, 생년월일, 주소</td>
+            <td>후원 접수·확인, 기부금 영수증 발급, 후원 내역 관리</td>
+            <td>후원 종료일로부터 5년<br>(전자상거래법 등 관계 법령에 따른 보존)</td>
+          </tr></tbody>
+        </table>
+        <p class="agree-note">귀하는 개인정보 수집·이용에 대한 동의를 거부할 권리가 있습니다. 다만 필수 항목 동의를 거부하실 경우 후원 신청 및 영수증 발급이 제한될 수 있습니다.</p>
+        <label class="agree-check">
+          <input type="checkbox" id="agree1">
+          위 내용을 확인하였으며 개인정보 수집 및 이용에 동의합니다. <strong>(필수)</strong>
+        </label>
+      </div>
+
+      <!-- 필수 - 제3자 제공 동의 -->
+      <div class="agree-box">
+        <div class="agree-title">[필수] 개인정보 제3자 제공 동의</div>
+        <table class="agree-tbl">
+          <thead><tr><th>제공받는 자</th><th>제공 항목</th><th>제공 목적</th><th>보유·이용 기간</th></tr></thead>
+          <tbody>
+            <tr><td>관할 세무서(국세청)</td><td>이름, 후원 내역</td><td>연말정산 기부금 영수증 증빙</td><td>5년</td></tr>
+          </tbody>
+        </table>
+        <p class="agree-note">귀하는 개인정보 제3자 제공에 대한 동의를 거부할 권리가 있습니다. 다만 동의 거부 시 연말정산 간소화 서비스를 통한 기부 내역 자동 조회 및 기부금 영수증 발급이 제한될 수 있습니다.</p>
+        <label class="agree-check">
+          <input type="checkbox" id="agree2">
+          위 내용을 확인하였으며 개인정보 제3자 제공에 동의합니다. <strong>(필수)</strong>
+        </label>
+      </div>
+
+      <!-- 선택 - 마케팅 활용 동의 -->
+      <div class="agree-box agree-optional">
+        <div class="agree-title">[선택] 후원 소식 및 행사 안내 수신 동의</div>
+        <p class="agree-note" style="margin-bottom:10px">본 동의는 거부하셔도 후원 신청에 영향을 주지 않습니다. 동의하실 경우 복지관 소식지, 후원 감사 인사, 행사 초청 등을 문자·이메일로 안내해 드립니다.</p>
+        <label class="agree-check">
+          <input type="checkbox" id="agree3">
+          후원 소식 및 행사 안내 수신에 동의합니다. <span style="color:var(--ink-s);font-weight:600">(선택)</span>
+        </label>
+      </div>
+
+      <!-- 개인정보처리방침 링크 -->
+      <div class="policy-link-box">
+        📄 수집되는 개인정보의 처리 절차, 보유기간, 파기방법 등 자세한 내용은
+        <a href="privacy.html" target="_blank">개인정보처리방침 전문 보기 →</a>
+      </div>
+
+      <!-- 신청인 서명 -->
+      <div class="fg">
+        <label>신청인(기부자) 서명 <span class="req">*</span></label>
+        <p style="font-size:.74rem;color:var(--ink-s);margin-bottom:8px">위 동의 내용을 모두 확인하였으며, 본인은 후원 신청서 제출에 대해 직접 서명합니다.</p>
+        <div class="sig-wrap">
+          <canvas id="sigCanvas" width="660" height="110"></canvas>
+        </div>
+        <div class="sig-actions">
+          <button type="button" class="btn-sig" onclick="clearSig()">✕ 서명 지우기</button>
+        </div>
+      </div>
+
+      <!-- 스팸 방지 -->
+      <div class="fg">
+        <label>스팸 방지 질문 <span class="req">*</span></label>
+        <div class="captcha-box">
+          <span class="captcha-q" id="captchaQ">3 + 5 = ?</span>
+          <input type="number" id="captchaA" placeholder="정답 입력">
+          <span style="font-size:.72rem;color:var(--ink-s)">자동 가입 및 스팸 도배를 방지하기 위한 간단한 질문입니다.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button type="button" class="btn-submit" onclick="submitForm()">💚 따뜻한 후원(기부) 신청 완료하기</button>
+    </div>
+  </div>
+
+  <!-- 완료 -->
+  <div class="success" id="successBox">
+    <div class="success-ico">🎉</div>
+    <h2>신청이 접수되었습니다!</h2>
+    <p>따뜻한 나눔의 손길에 깊이 감사드립니다.<br>입력하신 연락처로 확인 연락을 드리겠습니다.</p>
+    <div class="success-summary" id="successSummary"></div>
+    <div class="success-btns">
+      <button class="btn-back" onclick="location.href='index.html'">← 웹진으로</button>
+      <button class="btn-again" onclick="resetForm()">추가 신청</button>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <strong>영암군장애인종합복지관</strong><br>
+  전라남도 영암군 영암읍 오리정길 37 &nbsp;|&nbsp; T 061-470-6743 &nbsp;|&nbsp; F 061-470-6769<br>
+  후원 계좌: 광주은행 1107-021-791537 (비지정후원) / 1107-021-791571 (지정후원) &nbsp;|&nbsp; 예금주: 영암군장애인종합복지관<br>
+  <a href="privacy.html">개인정보처리방침</a>
+</footer>
+
+<script>
+/* admin 설정 반영 */
+(function(){
+  try{
+    const s=JSON.parse(localStorage.getItem('wc_set')||'{}');
+    if(s.title){const e=document.getElementById('spTitle');if(e)e.textContent=s.title;}
+  }catch(e){}
+})();
+
+/* 유형 선택 */
+let curType='regular';
+function selectType(el,type){
+  let card=el;
+  while(card&&!card.classList.contains('type-card'))card=card.parentElement;
+  if(!card)return;
+  document.querySelectorAll('.type-card').forEach(c=>c.classList.remove('on'));
+  card.classList.add('on');
+  curType=type;
+  ['regular','once','goods','vol'].forEach(t=>{
+    const e=document.getElementById('f-'+t);
+    if(e)e.style.display=t===type?'':'none';
+  });
+  updateSteps();
+}
+
+/* 금액 선택 */
+let selAmt='30000';
+function setAmt(btn,val){
+  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on'); selAmt=val;
+  document.getElementById('customAmtWrap').style.display=val==='custom'?'':'none';
+}
+
+/* 계좌 선택 */
+let selAcc='undesignated';
+function selectAcc(el,type){
+  document.querySelectorAll('.acc-radio-card').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  selAcc=type;
+}
+
+/* 영수증 발급 설정 */
+let receiptType='personal';
+function selectReceipt(el,type){
+  document.querySelectorAll('.receipt-opt').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  receiptType=type;
+  const wrap=document.getElementById('receiptIdWrap');
+  const hint=document.getElementById('receiptHint');
+  if(type==='none'){
+    wrap.style.display='none';
+  }else{
+    wrap.style.display='';
+    if(type==='org'){
+      hint.textContent='사업자/단체용 선택 시에는 별도 문의를 통해 사업자등록증 사본을 제출해 주세요.';
+      document.getElementById('dBirth').placeholder='사업자등록번호 (예: 123-45-67890)';
+    }else{
+      hint.textContent='개인용 선택 시 생년월일 입력이 필요합니다. (주민등록번호 뒷자리는 수집하지 않습니다)';
+      document.getElementById('dBirth').placeholder='예: 19800101 (8자리)';
+    }
+  }
+}
+
+/* 단계 */
+function updateSteps(){
+  const name=document.getElementById('dName').value.trim();
+  const agree=document.getElementById('agree1').checked;
+  setStep(2,name?'on':''); setLine(1,name?'done':'');
+  setStep(3,agree?'on':''); setLine(2,agree?'done':'');
+}
+function setStep(n,cls){const e=document.getElementById('s'+n);e.classList.remove('on','done');if(cls)e.classList.add(cls);}
+function setLine(n,cls){const e=document.getElementById('l'+n);e.classList.remove('done');if(cls)e.classList.add(cls);}
+document.getElementById('dName').addEventListener('input',updateSteps);
+document.getElementById('agree1').addEventListener('change',updateSteps);
+
+/* 서명 */
+const canvas=document.getElementById('sigCanvas');
+const ctx=canvas.getContext('2d');
+let drawing=false;
+ctx.strokeStyle='#1b4332';ctx.lineWidth=2.5;ctx.lineCap='round';
+function getPos(e){
+  const r=canvas.getBoundingClientRect();
+  const sx=canvas.width/r.width,sy=canvas.height/r.height;
+  const src=e.touches?e.touches[0]:e;
+  return{x:(src.clientX-r.left)*sx,y:(src.clientY-r.top)*sy};
+}
+canvas.addEventListener('mousedown',e=>{drawing=true;const p=getPos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)});
+canvas.addEventListener('mousemove',e=>{if(!drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke()});
+canvas.addEventListener('mouseup',()=>drawing=false);
+canvas.addEventListener('mouseleave',()=>drawing=false);
+canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const p=getPos(e);ctx.beginPath();ctx.moveTo(p.x,p.y)},{passive:false});
+canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const p=getPos(e);ctx.lineTo(p.x,p.y);ctx.stroke()},{passive:false});
+canvas.addEventListener('touchend',()=>drawing=false);
+function clearSig(){ctx.clearRect(0,0,canvas.width,canvas.height)}
+function isSigEmpty(){
+  const data=ctx.getImageData(0,0,canvas.width,canvas.height).data;
+  for(let i=3;i<data.length;i+=4){ if(data[i]!==0) return false; }
+  return true;
+}
+
+/* 스팸 방지 캡차 */
+let captchaAnswer=0;
+function genCaptcha(){
+  const a=Math.floor(Math.random()*8)+2;
+  const b=Math.floor(Math.random()*8)+2;
+  captchaAnswer=a+b;
+  document.getElementById('captchaQ').textContent=a+' + '+b+' = ?';
+  document.getElementById('captchaA').value='';
+}
+genCaptcha();
+
+/* 제출 */
+async function submitForm(){
+  const name=document.getElementById('dName').value.trim();
+  const phone=document.getElementById('dPhone').value.trim();
+  if(!name){alert('기부자명을 입력해 주세요.');document.getElementById('dName').focus();return;}
+  if(!phone){alert('연락처를 입력해 주세요.');document.getElementById('dPhone').focus();return;}
+  if(!document.getElementById('agree1').checked){alert('[필수] 개인정보 수집 및 이용에 동의해 주세요.');document.getElementById('agree1').scrollIntoView({behavior:'smooth',block:'center'});return;}
+  if(!document.getElementById('agree2').checked){alert('[필수] 개인정보 제3자 제공에 동의해 주세요.');document.getElementById('agree2').scrollIntoView({behavior:'smooth',block:'center'});return;}
+  if(isSigEmpty()){alert('서명을 입력해 주세요.');document.getElementById('sigCanvas').scrollIntoView({behavior:'smooth',block:'center'});return;}
+  const captchaInput=parseInt(document.getElementById('captchaA').value);
+  if(captchaInput!==captchaAnswer){alert('스팸 방지 질문의 답이 올바르지 않습니다. 다시 확인해 주세요.');genCaptcha();return;}
+
+  const typeLabel={regular:'정기 후원',once:'일시 후원',goods:'물품 후원',vol:'자원봉사'};
+  const accLabel={undesignated:'비지정후원(광주은행 1107-021-791537)',designated:'지정후원(광주은행 1107-021-791571)'};
+  let detail='';
+  if(curType==='regular'){
+    const amt=selAmt==='custom'
+      ?(parseInt(document.getElementById('customAmt').value)||0).toLocaleString()+'원'
+      :parseInt(selAmt).toLocaleString()+'원';
+    detail=`<br>• 후원 금액: <strong>매월 ${amt}</strong><br>• 입금 계좌: <strong>${accLabel[selAcc]}</strong>`;
+  }else if(curType==='once'){
+    const amt=parseInt(document.getElementById('onceAmt').value)||0;
+    detail=`<br>• 후원 금액: <strong>${amt.toLocaleString()}원</strong><br>• 입금 계좌: <strong>${accLabel[selAcc]}</strong>`;
+  }
+
+  document.getElementById('successSummary').innerHTML=
+    `• 신청 유형: <strong>${typeLabel[curType]}</strong>${detail}`+
+    `<br>• 신청인: <strong>${name}</strong>`+
+    `<br>• 연락처: <strong>${phone}</strong>`;
+
+  document.getElementById('formWrap').style.display='none';
+  document.getElementById('successBox').style.display='block';
+  window.scrollTo({top:0,behavior:'smooth'});
+  ['s1','s2','s3'].forEach(id=>{document.getElementById(id).classList.remove('on');document.getElementById(id).classList.add('done');});
+  ['l1','l2'].forEach(id=>document.getElementById(id).classList.add('done'));
+
+  // Firebase 저장
+  const amount=curType==='regular'?(selAmt==='custom'?document.getElementById('customAmt').value:selAmt):(curType==='once'?document.getElementById('onceAmt').value:(curType==='goods'?document.getElementById('goodsAmt').value:''));
+  const spData={
+    type:curType,name,phone,
+    email:document.getElementById('dEmail').value.trim(),
+    fax:document.getElementById('dFax').value.trim(),
+    birth:document.getElementById('dBirth').value.trim(),
+    addrType:document.getElementById('dAddrType').value,
+    addr:document.getElementById('dAddr').value.trim(),
+    amount,
+    account: (curType==='regular'||curType==='once') ? selAcc : '',
+    accountLabel: (curType==='regular'||curType==='once') ? accLabel[selAcc] : '',
+    receiptType,
+    goodsInfo: curType==='goods' ? document.getElementById('goodsInfo').value.trim() : '',
+    volInfo: curType==='vol' ? document.getElementById('volInfo').value.trim() : '',
+    message:document.getElementById('message').value.trim(),
+    marketingConsent: document.getElementById('agree3').checked,
+    consentAt: new Date().toISOString(),
+    status:'신청',createdAt:new Date().toISOString()
+  };
+  if(window.__spDb&&window.__spAdd&&window.__spCol){
+    try{await window.__spAdd(window.__spCol(window.__spDb,'sponsors'),spData);}
+    catch(e){saveLocal(spData);}
+  }else{saveLocal(spData);}
+}
+function saveLocal(data){
+  const arr=JSON.parse(localStorage.getItem('wolchul_sponsors')||'[]');
+  arr.unshift({id:'sp_'+Date.now(),...data});
+  localStorage.setItem('wolchul_sponsors',JSON.stringify(arr));
+}
+function resetForm(){
+  document.getElementById('formWrap').style.display='';
+  document.getElementById('successBox').style.display='none';
+  ['dName','dPhone','dEmail','dFax','dBirth','dAddr','message','goodsInfo','volInfo','goodsAmt'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('agree1').checked=false;
+  document.getElementById('agree2').checked=false;
+  document.getElementById('agree3').checked=false;
+  clearSig();
+  genCaptcha();
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('s1').classList.add('on');
+  ['s1','s2','s3'].forEach(id=>{document.getElementById(id).classList.remove('done');});
+  ['s2','s3'].forEach(id=>{document.getElementById(id).classList.remove('on');});
+  ['l1','l2'].forEach(id=>document.getElementById(id).classList.remove('done'));
+}
+</script>
+</body>
+</html>
