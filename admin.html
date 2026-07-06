@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>관리자 | 월출어람 웹진</title>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const FC = {
+  apiKey:"AIzaSyDixmWj8Ah9vzACGZ6DfL5hAP9sC-H-5Ig",
+  authDomain:"jjjj-6742.firebaseapp.com",
+  projectId:"jjjj-6742",
+  storageBucket:"jjjj-6742.firebasestorage.app",
+  messagingSenderId:"61243262608",
+  appId:"1:61243262608:web:5e9139eb2345fbaf01fa15"
+};
+try {
+  const app = initializeApp(FC);
+  const db  = getFirestore(app);
+  window.__db = db;
+  window.__fs = { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, orderBy, query };
+} catch(e){ console.warn("Firebase 오류:", e.message); }
+</script>
+<style>
+:root{
+  --sky:#5bb8e8;--sky-d:#2d88b5;--sky-l:#e8f6fd;
+  --pink:#e8608a;--navy:#1a3a5c;
+  --green:#2e8b57;--red:#c0392b;--gold:#e8960a;--gold-l:#fff8ec;
+  --text:#1c1c1c;--text-m:#444;--text-s:#777;
+  --bg:#f0f6fb;--white:#fff;--border:#d4eaf8;
+  --r:10px;--sh:0 2px 14px rgba(91,184,232,.1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+/* 로그인 */
+.lp{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#c8e8f8,#f8d4e4)}
+.lb{background:var(--white);border-radius:20px;padding:40px 36px;width:340px;box-shadow:0 8px 40px rgba(91,184,232,.2)}
+.li{text-align:center;margin-bottom:24px}
+.li-ico{width:48px;height:48px;background:linear-gradient(135deg,var(--sky),var(--navy));border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:1.4rem}
+.li strong{display:block;font-size:1rem;font-weight:900;color:var(--navy)}
+.li span{font-size:.72rem;color:var(--text-s)}
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:.75rem;font-weight:700;color:var(--text-m);margin-bottom:5px}
+.fg input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 13px;font-size:.86rem;background:var(--bg);color:var(--text);outline:none;transition:border .2s}
+.fg input:focus{border-color:var(--sky);background:var(--white)}
+.btn-li{width:100%;background:linear-gradient(135deg,var(--sky),var(--navy));color:#fff;border:none;border-radius:10px;padding:12px;font-size:.9rem;font-weight:800;margin-top:6px}
+.btn-li:hover{opacity:.88}
+.lerr{color:var(--red);font-size:.75rem;text-align:center;margin-top:9px;display:none}
+
+/* 대시보드 */
+#dash{display:none;min-height:100vh}
+.ah{background:var(--navy);color:#fff;padding:0 20px;display:flex;align-items:center;gap:12px;height:56px;position:sticky;top:0;z-index:100}
+.ah .logo{font-size:.9rem;font-weight:900;margin-right:auto}
+.ah .logo small{font-size:.64rem;opacity:.5;font-weight:400;margin-left:6px}
+.hb{background:rgba(255,255,255,.12);border:none;color:rgba(255,255,255,.85);border-radius:16px;padding:5px 13px;font-size:.75rem}
+.hb:hover{background:rgba(255,255,255,.22);color:#fff}
+.ab{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 56px)}
+.sb{background:var(--white);border-right:1px solid var(--border);padding:18px 0}
+.sb-s{padding:0 14px;margin-bottom:16px}
+.sb-t{font-size:.62rem;font-weight:800;color:var(--text-s);text-transform:uppercase;letter-spacing:.1em;padding:0 8px;margin-bottom:6px}
+.sb-b{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:8px;font-size:.79rem;font-weight:600;color:var(--text-m);border:none;background:none;width:100%;text-align:left;transition:all .18s}
+.sb-b:hover{background:var(--sky-l);color:var(--sky)}
+.sb-b.on{background:var(--sky-l);color:var(--sky);font-weight:800}
+.am{padding:24px 28px;overflow-y:auto}
+.pn{display:none}
+.pn.on{display:block}
+.pt{font-size:1.05rem;font-weight:900;color:var(--navy);margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.pbg{background:var(--sky-l);color:var(--sky);font-size:.7rem;padding:3px 9px;border-radius:8px;font-weight:700}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;gap:5px;border-radius:8px;padding:7px 15px;font-size:.78rem;font-weight:700;border:none;transition:all .18s}
+.bp{background:var(--sky);color:#fff}.bp:hover{background:var(--sky-d)}
+.bs{background:var(--green);color:#fff}.bs:hover{background:#1e6b3c}
+.bd{background:var(--red);color:#fff}.bd:hover{background:#a02020}
+.bo{background:transparent;border:1.5px solid var(--border);color:var(--text-m)}.bo:hover{border-color:var(--sky);color:var(--sky)}
+.bsm{padding:4px 11px;font-size:.72rem}
+.bgold{background:var(--gold);color:#fff}.bgold:hover{background:#c07800}
+
+/* 대시 카드 */
+.dg{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.dc{background:var(--white);border-radius:var(--r);padding:18px;box-shadow:var(--sh)}
+.dn{font-size:2rem;font-weight:900;color:var(--sky);line-height:1}
+.dl{font-size:.72rem;color:var(--text-s);margin-top:4px}
+.dc.gold .dn{color:var(--gold)}
+
+/* Firebase 상태 */
+.fbs{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;font-size:.77rem;font-weight:700;margin-bottom:18px}
+.fbs.ok{background:#e8f5ee;color:#1a6b3c;border:1px solid #b8e0c8}
+.fbs.err{background:#fce8e8;color:#8b1a1a;border:1px solid #e8b8b8}
+.fbs.warn{background:var(--sky-l);color:var(--navy);border:1px solid var(--border)}
+
+/* 테이블 */
+.tb{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.tb input{border:1.5px solid var(--border);border-radius:8px;padding:7px 13px;font-size:.77rem;background:var(--bg);color:var(--text);outline:none;flex:1;min-width:160px}
+.tb input:focus{border-color:var(--sky)}
+.tb select{border:1.5px solid var(--border);border-radius:8px;padding:7px 11px;font-size:.77rem;background:var(--bg);color:var(--text);outline:none}
+.tbl{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.tbl th{background:var(--navy);color:#fff;padding:10px 13px;font-size:.72rem;font-weight:700;text-align:left}
+.tbl td{padding:10px 13px;font-size:.77rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--sky-l)}
+.tc{font-weight:700;color:var(--navy);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acts{display:flex;gap:5px;white-space:nowrap}
+.chip{display:inline-block;border-radius:9px;padding:2px 8px;font-size:.66rem;font-weight:800}
+
+/* 후원 신청 상세 모달 */
+.dov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;padding:20px}
+.dov.open{display:flex}
+.dob{background:var(--white);border-radius:16px;max-width:520px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.2);overflow:hidden}
+.doh{background:linear-gradient(135deg,var(--gold),#c07800);color:#fff;padding:20px 22px;position:relative}
+.doh h3{font-size:1rem;font-weight:900}
+.doh p{font-size:.75rem;opacity:.85;margin-top:4px}
+.dx{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:.9rem}
+.doc{padding:22px}
+.drow{display:flex;gap:0;border-bottom:1px solid var(--border);padding:10px 0}
+.drow:last-child{border-bottom:none}
+.dk{font-size:.75rem;font-weight:700;color:var(--text-s);min-width:100px}
+.dv{font-size:.82rem;color:var(--text);font-weight:600;flex:1}
+.dft{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+
+/* 에디터 */
+.ew{background:var(--white);border-radius:var(--r);padding:24px;box-shadow:var(--sh)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.fr.full{grid-template-columns:1fr}
+.fg2{display:flex;flex-direction:column;gap:4px}
+.fg2 label{font-size:.72rem;font-weight:700;color:var(--text-m)}
+.req{color:var(--red)}
+.fg2 input,.fg2 select,.fg2 textarea{border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.82rem;color:var(--text);background:var(--bg);outline:none;transition:border .2s}
+.fg2 input:focus,.fg2 select:focus,.fg2 textarea:focus{border-color:var(--sky);background:var(--white)}
+.fg2 textarea{resize:vertical;min-height:80px}
+
+/* 사진 입력 */
+.img-box{background:var(--sky-l);border:1.5px solid var(--border);border-radius:10px;padding:14px;margin-bottom:14px}
+.img-box-title{font-size:.78rem;font-weight:800;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+/* 드래그 앤 드롭 영역 */
+.drop-zone{border:2.5px dashed var(--sky);border-radius:12px;background:var(--white);
+  padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:10px;
+  position:relative}
+.drop-zone:hover,.drop-zone.drag-over{background:var(--sky-l);border-color:var(--sky-d)}
+.drop-zone.drag-over{transform:scale(1.01);box-shadow:0 4px 20px rgba(91,184,232,.25)}
+.drop-ico{font-size:2.2rem;margin-bottom:8px}
+.drop-txt{font-size:.82rem;font-weight:700;color:var(--navy);margin-bottom:4px}
+.drop-sub{font-size:.72rem;color:var(--text-s)}
+.drop-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+/* URL 입력 */
+.img-url-row{display:flex;gap:8px;margin-bottom:8px}
+.img-url-row input{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px;font-size:.8rem;background:var(--white);color:var(--text);outline:none}
+.img-url-row input:focus{border-color:var(--sky)}
+/* 미리보기 */
+.img-previews{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ipi{position:relative;display:inline-block}
+.ipi img{height:80px;width:80px;border-radius:8px;border:1.5px solid var(--border);object-fit:cover;display:block}
+.ipi .ipi-name{font-size:.6rem;color:var(--text-s);text-align:center;margin-top:3px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ipd{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border-radius:50%;background:var(--red);border:none;color:#fff;font-size:.6rem;display:flex;align-items:center;justify-content:center}
+/* 업로드 진행 */
+.upload-progress{background:var(--border);border-radius:4px;height:4px;margin-top:8px;display:none}
+.upload-progress-bar{height:4px;background:var(--sky);border-radius:4px;transition:width .3s;width:0}
+
+/* 본문 에디터 */
+.ce{border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.ct{background:var(--bg);border-bottom:1px solid var(--border);padding:7px 10px;display:flex;gap:5px;flex-wrap:wrap}
+.ct button{background:var(--white);border:1px solid var(--border);border-radius:5px;padding:3px 9px;font-size:.73rem;font-weight:700;color:var(--text-m)}
+.ct button:hover{background:var(--sky-l);color:var(--sky);border-color:var(--sky)}
+#cedit{min-height:260px;padding:14px;font-size:.85rem;line-height:1.8;outline:none;color:var(--text)}
+#cedit img{max-width:100%;border-radius:8px;margin:8px 0}
+#csrc{display:none;width:100%;min-height:260px;padding:14px;font-size:.77rem;font-family:monospace;border:none;outline:none;resize:vertical;color:var(--text);background:var(--bg)}
+.fa{display:flex;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* 설정 */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.sc{background:var(--white);border-radius:var(--r);padding:20px;box-shadow:var(--sh)}
+.sc h3{font-size:.84rem;font-weight:800;color:var(--navy);margin-bottom:13px;padding-bottom:9px;border-bottom:1px solid var(--border)}
+.sf{margin-bottom:11px}
+.sf label{display:block;font-size:.71rem;font-weight:700;color:var(--text-m);margin-bottom:4px}
+.sf input{width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-size:.81rem;background:var(--bg);color:var(--text);outline:none}
+.sf input:focus{border-color:var(--sky);background:var(--white)}
+
+/* 삭제 확인 */
+.conf{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;align-items:center;justify-content:center}
+.conf.open{display:flex}
+.conf-box{background:var(--white);border-radius:14px;padding:26px;max-width:340px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.conf-box h3{font-size:.95rem;font-weight:900;color:var(--navy);margin-bottom:8px}
+.conf-box p{font-size:.79rem;color:var(--text-m);margin-bottom:18px}
+.ca{display:flex;gap:8px;justify-content:flex-end}
+
+/* 미리보기 */
+.pov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;overflow-y:auto;padding:20px}
+.pob{background:#fff;border-radius:16px;max-width:660px;margin:0 auto}
+.poh{background:linear-gradient(135deg,#5bb8e8,#1a3a5c);color:#fff;padding:22px;border-radius:16px 16px 0 0;position:relative}
+.poh h2{font-size:1.12rem;font-weight:900;line-height:1.4}
+.poc{padding:22px;font-size:.85rem;line-height:1.85;color:#444}
+.poc p{margin-bottom:12px}
+.poc h3{font-size:.9rem;font-weight:800;color:#1a3a5c;margin:14px 0 6px}
+.poc img{max-width:100%;border-radius:8px;margin:10px 0}
+.px{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:.9rem}
+
+/* 토스트 */
+.toast{position:fixed;bottom:22px;right:22px;background:var(--navy);color:#fff;border-radius:9px;padding:11px 18px;font-size:.79rem;font-weight:700;z-index:999;transform:translateY(50px);opacity:0;transition:all .28s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
+
+/* 빈 상태 */
+.empty-state{text-align:center;padding:48px 20px;color:var(--text-s)}
+.empty-state p{font-size:.85rem;margin-top:10px}
+
+@media(max-width:720px){
+  .ab{grid-template-columns:1fr}
+  .sb{display:none}
+  .fr{grid-template-columns:1fr}
+  .sg{grid-template-columns:1fr}
+  .dg{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div id="lp" class="lp">
+  <div class="lb">
+    <div class="li">
+      <div class="li-ico">🌿</div>
+      <strong>월출어람 관리자</strong>
+      <span>영암군장애인종합복지관 웹진</span>
+    </div>
+    <div class="fg"><label>아이디</label>
+      <input type="text" id="lid" placeholder="아이디" autocomplete="username"></div>
+    <div class="fg"><label>비밀번호</label>
+      <input type="password" id="lpw" placeholder="비밀번호" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-li" onclick="doLogin()">로그인</button>
+    <div class="lerr" id="lerr">아이디 또는 비밀번호가 올바르지 않습니다.</div>
+    <div style="text-align:center;margin-top:14px;font-size:.72rem">
+      <a href="index.html" style="color:var(--sky)">← 웹진으로 돌아가기</a>
+    </div>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<div id="dash">
+  <header class="ah">
+    <div class="logo">월출어람 관리자 <small>영암군장애인종합복지관</small></div>
+    <a class="hb" href="index.html" target="_blank">🌐 웹진 보기</a>
+    <button class="hb" onclick="doLogout()">로그아웃</button>
+  </header>
+  <div class="ab">
+    <!-- 사이드바 -->
+    <aside class="sb">
+      <div class="sb-s">
+        <div class="sb-t">대시보드</div>
+        <button class="sb-b on" onclick="go('pdash',this)">📊 현황 요약</button>
+      </div>
+      <div class="sb-s">
+        <div class="sb-t">기사 관리</div>
+        <button class="sb-b" onclick="go('plist',this)">📋 기사 목록</button>
+        <button class="sb-b" onclick="newArt()">✏️ 새 기사 작성</button>
+      </div>
+      <div class="sb-s">
+        <div class="sb-t">후원 관리</div>
+        <button class="sb-b" onclick="go('psponsor',this)">💚 후원 신청 접수</button>
+      </div>
+      <div class="sb-s">
+        <div class="sb-t">카테고리별 기사</div>
+        <button class="sb-b" onclick="goCat('관장인사말',this)">📝 관장 인사말</button>
+        <button class="sb-b" onclick="goCat('발자취',this)">🗓 발자취</button>
+        <button class="sb-b" onclick="goCat('프로그램',this)">🎯 프로그램</button>
+        <button class="sb-b" onclick="goCat('나들이',this)">🚌 나들이·탐방</button>
+        <button class="sb-b" onclick="goCat('지역사회',this)">🤝 지역사회</button>
+        <button class="sb-b" onclick="goCat('공모사업',this)">🏆 공모사업</button>
+        <button class="sb-b" onclick="goCat('후원봉사',this)">💚 후원·봉사</button>
+      </div>
+      <div class="sb-s">
+        <div class="sb-t">설정</div>
+        <button class="sb-b" onclick="go('pset',this)">⚙️ 사이트 설정</button>
+        <button class="sb-b" onclick="go('ppw',this)">🔒 비밀번호 변경</button>
+      </div>
+    </aside>
+
+    <!-- 메인 -->
+    <div class="am">
+
+      <!-- 대시보드 -->
+      <div class="pn on" id="pdash">
+        <div class="pt">📊 현황 요약</div>
+        <div id="fbs" class="fbs warn">⏳ Firebase 연결 확인 중...</div>
+        <div class="dg">
+          <div class="dc"><div class="dn" id="dt">0</div><div class="dl">전체 기사</div></div>
+          <div class="dc"><div class="dn" id="dc2">0</div><div class="dl">카테고리 수</div></div>
+          <div class="dc gold"><div class="dn" id="dsp">0</div><div class="dl">후원 신청 접수</div></div>
+          <div class="dc"><div class="dn" id="dd" style="font-size:.9rem;padding-top:4px">-</div><div class="dl">최신 기사</div></div>
+        </div>
+        <!-- VOL.3 기사 일괄 등록 버튼 -->
+        <div style="background:#fff8ec;border:2px solid var(--gold);border-radius:var(--r);padding:18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-size:.88rem;font-weight:800;color:#7a4400;margin-bottom:4px">📚 VOL.3 기사 일괄 등록</div>
+            <div style="font-size:.74rem;color:var(--text-m)">2026년 상반기 소식지(VOL.3) 기사 24건을 Firebase에 한 번에 등록합니다.<br>Firebase 연결됨 상태에서만 동작합니다.</div>
+          </div>
+          <button class="btn bgold" onclick="uploadVol3Articles()" style="white-space:nowrap;padding:10px 20px;font-size:.85rem">
+            📤 VOL.3 기사 24건 등록하기
+          </button>
+        </div>
+
+        <div style="background:var(--white);border-radius:var(--r);padding:18px;box-shadow:var(--sh)">
+          <div style="font-size:.84rem;font-weight:800;color:var(--navy);margin-bottom:12px">카테고리별 현황</div>
+          <div id="cs"></div>
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);font-size:.74rem;color:var(--text-s)">
+            💡 사이드바의 <strong>💚 후원 신청 접수</strong>에서 신청자 목록을 확인하세요.
+          </div>
+        </div>
+      </div>
+
+      <!-- 기사 목록 -->
+      <div class="pn" id="plist">
+        <div class="pt">📋 기사 목록 <span class="pbg" id="ac">0건</span></div>
+        <div class="tb">
+          <input type="text" id="ts" placeholder="제목 검색..." oninput="rTbl()">
+          <select id="tcf" onchange="rTbl()">
+            <option value="">전체 카테고리</option>
+            <option>관장인사말</option><option>발자취</option><option>프로그램</option>
+            <option>나들이</option><option>지역사회</option><option>공모사업</option>
+            <option>후원봉사</option><option>소식</option>
+          </select>
+          <button class="btn bp" onclick="newArt()">+ 새 기사</button>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>No</th><th>제목</th><th>카테고리</th><th>날짜</th><th>관리</th></tr></thead>
+          <tbody id="at"></tbody>
+        </table>
+      </div>
+
+      <!-- 에디터 -->
+      <div class="pn" id="peditor">
+        <div class="pt" id="etl">✏️ 새 기사 작성</div>
+        <div class="ew">
+          <input type="hidden" id="eid">
+          <div class="fr">
+            <div class="fg2"><label>제목 <span class="req">*</span></label>
+              <input type="text" id="etti" placeholder="기사 제목"></div>
+            <div class="fg2"><label>카테고리 <span class="req">*</span></label>
+              <select id="ecat">
+                <option>관장인사말</option><option>발자취</option><option>프로그램</option>
+                <option>나들이</option><option>지역사회</option><option>공모사업</option>
+                <option>후원봉사</option><option>소식</option>
+              </select></div>
+          </div>
+          <div class="fr">
+            <div class="fg2"><label>이모지</label>
+              <input type="text" id="eemo" placeholder="예: 🌿 ☀️"></div>
+            <div class="fg2"><label>날짜</label>
+              <input type="date" id="edat"></div>
+          </div>
+          <div class="fr">
+            <div class="fg2"><label>작성자</label>
+              <input type="text" id="eaut" placeholder="예: 기획홍보팀"></div>
+            <div class="fg2"><label>특집 여부</label>
+              <select id="efea">
+                <option value="false">일반 기사</option>
+                <option value="true">✨ 특집 기사</option>
+              </select></div>
+          </div>
+          <div class="fr full">
+            <div class="fg2"><label>요약 <span class="req">*</span></label>
+              <textarea id="esum" placeholder="카드에 표시될 짧은 설명"></textarea></div>
+          </div>
+          <!-- 사진 입력 -->
+          <div class="img-box">
+            <div class="img-box-title">📷 사진 추가
+              <small style="font-size:.68rem;font-weight:400;color:var(--text-s)">— 드래그하거나 클릭해서 업로드</small>
+            </div>
+            <!-- 드래그 앤 드롭 영역 -->
+            <div class="drop-zone" id="dropZone">
+              <input type="file" class="drop-input" id="fileInput" accept="image/*" multiple>
+              <div class="drop-ico">🖼️</div>
+              <div class="drop-txt">사진은 아래 URL 방식으로 추가하세요</div>
+              <div class="drop-sub">구글 드라이브에 사진 업로드 후 링크를 복사해서 아래에 붙여넣기</div>
+            </div>
+            <div class="upload-progress" id="uploadProgress">
+              <div class="upload-progress-bar" id="uploadBar"></div>
+            </div>
+            <!-- URL 입력 (선택) -->
+            <div style="display:flex;align-items:center;gap:8px;margin:8px 0">
+              <div style="flex:1;height:1px;background:var(--border)"></div>
+              <span style="font-size:.7rem;color:var(--text-s)">또는 URL 직접 입력</span>
+              <div style="flex:1;height:1px;background:var(--border)"></div>
+            </div>
+            <div class="img-url-row">
+              <input type="text" id="imgUrl" placeholder="https:// 사진 주소 붙여넣기">
+              <button class="btn bp bsm" onclick="insertImgUrl()" type="button">삽입</button>
+            </div>
+            <!-- 미리보기 -->
+            <div class="img-previews" id="imgPrev"></div>
+          </div>
+          <!-- 본문 -->
+          <div class="fr full">
+            <div class="fg2">
+              <label>본문 내용 <span class="req">*</span></label>
+              <div class="ce">
+                <div class="ct">
+                  <button onclick="fmt('bold')" type="button"><b>굵게</b></button>
+                  <button onclick="fmt('italic')" type="button"><i>기울임</i></button>
+                  <button onclick="fmt('underline')" type="button"><u>밑줄</u></button>
+                  <button onclick="iTag('h3')" type="button">제목</button>
+                  <button onclick="iTag('h4')" type="button">소제목</button>
+                  <button onclick="iTag('p')" type="button">단락</button>
+                  <button onclick="fmt('insertUnorderedList')" type="button">• 목록</button>
+                  <button onclick="fmt('insertHorizontalRule')" type="button">구분선</button>
+                  <button onclick="toggleSrc()" type="button" id="srcBtn">HTML</button>
+                </div>
+                <div id="cedit" contenteditable="true" spellcheck="false"></div>
+                <textarea id="csrc"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="fa">
+            <button class="btn bs" onclick="saveArt()" type="button">💾 저장하기</button>
+            <button class="btn bo" onclick="go('plist',null)" type="button">취소</button>
+            <button class="btn bo" onclick="prevArt()" type="button" style="margin-left:auto">👁 미리보기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ★ 후원 신청 접수 목록 -->
+      <div class="pn" id="psponsor">
+        <div class="pt">💚 후원 신청 접수 목록 <span class="pbg" id="spCnt">0건</span></div>
+        <div id="fbs2" class="fbs warn" style="margin-bottom:14px">⏳ 확인 중...</div>
+        <div style="background:var(--sky-l);border-left:4px solid var(--sky);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:.74rem;color:var(--navy);margin-bottom:14px">
+          🔒 후원자 개인정보는 업무 목적으로만 열람·이용해 주세요. 목록에는 기본적으로 마스킹 처리되며, 상세 정보가 필요한 경우 [상세 보기]를 이용하세요.
+        </div>
+        <div class="tb">
+          <input type="text" id="spSearch" placeholder="이름 또는 연락처 검색..." oninput="rSpTbl()">
+          <select id="spTypeFilter" onchange="rSpTbl()">
+            <option value="">전체 유형</option>
+            <option value="regular">정기 후원</option>
+            <option value="once">일시 후원</option>
+            <option value="goods">물품 후원</option>
+            <option value="vol">자원봉사</option>
+          </select>
+          <select id="spStatusFilter" onchange="rSpTbl()">
+            <option value="">전체 상태</option>
+            <option value="신청">신청</option>
+            <option value="확인중">확인중</option>
+            <option value="완료">완료</option>
+          </select>
+          <button class="btn bo bsm" id="spMaskBtn" onclick="toggleSpMask()">🔒 개인정보 가리기 ON</button>
+          <button class="btn bo bsm" onclick="exportCsv()">📥 엑셀 다운로드</button>
+        </div>
+        <table class="tbl" id="spTbl">
+          <thead><tr>
+            <th>No</th><th>신청일</th><th>이름</th><th>연락처</th>
+            <th>유형</th><th>금액</th><th>상태</th><th>관리</th>
+          </tr></thead>
+          <tbody id="spBody"></tbody>
+        </table>
+        <div class="empty-state" id="spEmpty" style="display:none">
+          <div style="font-size:2.5rem">📭</div>
+          <p>아직 후원 신청 접수 내역이 없습니다.<br>sponsor.html을 GitHub에 업로드하면 신청이 접수됩니다.</p>
+        </div>
+      </div>
+
+      <!-- 설정 -->
+      <div class="pn" id="pset">
+        <div class="pt">⚙️ 사이트 설정</div>
+        <div style="background:var(--sky-l);border-left:4px solid var(--sky);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;font-size:.76rem;color:var(--navy);margin-bottom:18px">
+          💡 저장 후 웹진을 <strong>새로고침</strong>하면 모든 변경사항이 반영됩니다.
+        </div>
+        <div class="sg">
+          <!-- 웹진 텍스트 설정 -->
+          <div class="sc">
+            <h3>🌿 웹진 텍스트</h3>
+            <div class="sf">
+              <label>소식지 제목 <small style="color:var(--text-s);font-weight:400">— 헤더 로고에 표시</small></label>
+              <input id="sttl" placeholder="월출어람">
+            </div>
+            <div class="sf">
+              <label>호수 전체 문구 <small style="color:var(--text-s);font-weight:400">— 히어로 배지에 그대로 표시</small></label>
+              <input id="svol" placeholder="영암장복 · 2026년 소식지">
+            </div>
+            <div class="sf">
+              <label>히어로 강조 문구 <small style="color:var(--text-s);font-weight:400">— 초록색으로 표시되는 부분</small></label>
+              <input id="sheroAccent" placeholder="따뜻한 길">
+            </div>
+            <div class="sf">
+              <label>히어로 부제목 <small style="color:var(--text-s);font-weight:400">— 큰 제목 아래 설명 문구</small></label>
+              <textarea id="sheroDesc" style="width:100%;border:1.5px solid var(--border);border-radius:7px;padding:8px 11px;font-size:.8rem;background:var(--bg);color:var(--text);outline:none;resize:vertical;min-height:60px;font-family:inherit">사회복지법인 전남밀알복지재단 영암군장애인종합복지관의 소식과 이야기를 담은 웹진입니다.</textarea>
+            </div>
+          </div>
+          <!-- 기관 정보 -->
+          <div class="sc">
+            <h3>📍 기관 정보</h3>
+            <div class="sf"><label>주소</label><input id="sadr" placeholder="전라남도 영암군 영암읍 오리정길 37"></div>
+            <div class="sf"><label>전화</label><input id="stel" placeholder="061-470-6743"></div>
+            <div class="sf"><label>팩스</label><input id="sfax" placeholder="061-470-6769"></div>
+            <div class="sf"><label>이메일</label><input id="seml" placeholder="yasg2025@naver.com"></div>
+            <div class="sf"><label>홈페이지</label><input id="sweb" placeholder="www.yajb.org"></div>
+            <h3 style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">🏦 후원 계좌</h3>
+            <div class="sf"><label>비지정후원 계좌</label><input id="sa1" placeholder="광주은행 1107-021-791537"></div>
+            <div class="sf"><label>지정후원 계좌</label><input id="sa2" placeholder="광주은행 1107-021-791571"></div>
+            <div class="sf"><label>예금주</label><input id="san" placeholder="영암군장애인종합복지관"></div>
+            <div class="sf"><label>후원 문의 전화</label><input id="sdt" placeholder="061-470-6743"></div>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn bs" onclick="saveSetting()">💾 설정 저장하기</button>
+        </div>
+      </div>
+
+      <!-- 비밀번호 -->
+      <div class="pn" id="ppw">
+        <div class="pt">🔒 비밀번호 변경</div>
+        <div style="background:var(--white);border-radius:var(--r);padding:24px;max-width:400px;box-shadow:var(--sh)">
+          <div class="fg"><label>현재 비밀번호</label><input type="password" id="pwc"></div>
+          <div class="fg"><label>새 비밀번호</label><input type="password" id="pwn"></div>
+          <div class="fg"><label>새 비밀번호 확인</label><input type="password" id="pwn2"></div>
+          <button class="btn bs" onclick="chgPw()" style="margin-top:6px">변경하기</button>
+          <p style="font-size:.71rem;color:var(--text-s);margin-top:12px">초기 계정 — ID: <strong>admin</strong> / PW: <strong>wolchul2026</strong></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- 후원 신청 상세 모달 -->
+<div class="dov" id="spDetail">
+  <div class="dob">
+    <div class="doh">
+      <h3>💚 후원 신청 상세 내용</h3>
+      <p id="dh-date"></p>
+      <button class="dx" onclick="closeSpDetail()">✕</button>
+    </div>
+    <div class="doc" id="dContent"></div>
+    <div class="dft">
+      <select id="spStatusSel" style="border:1.5px solid var(--border);border-radius:8px;padding:6px 11px;font-size:.78rem;background:var(--bg);color:var(--text);outline:none">
+        <option value="신청">신청</option>
+        <option value="확인중">확인중</option>
+        <option value="완료">완료</option>
+      </select>
+      <button class="btn bs bsm" onclick="updateSpStatus()">상태 저장</button>
+      <button class="btn bd bsm" onclick="deleteSp()">삭제</button>
+      <button class="btn bo bsm" onclick="closeSpDetail()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 삭제 확인 -->
+<div class="conf" id="confDel">
+  <div class="conf-box">
+    <h3>🗑 삭제 확인</h3>
+    <p id="confMsg"></p>
+    <div class="ca">
+      <button class="btn bo" onclick="closeConf()">취소</button>
+      <button class="btn bd" onclick="doDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- 미리보기 -->
+<div class="pov" id="pov">
+  <div class="pob">
+    <div class="poh">
+      <div id="pvcat" style="font-size:.68rem;font-weight:800;background:rgba(255,255,255,.22);padding:3px 9px;border-radius:9px;display:inline-block;margin-bottom:7px"></div>
+      <h2 id="pvtitle"></h2>
+      <div id="pvmeta" style="font-size:.71rem;opacity:.8;margin-top:6px"></div>
+      <button class="px" onclick="gi('pov').style.display='none'">✕</button>
+    </div>
+    <div class="poc" id="pvcontent"></div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* 인증 */
+const DI='admin', DP='wolchul2026';
+function creds(){ return {id:ls('adm_id')||DI, pw:ls('adm_pw')||DP}; }
+function isLogged(){ return sessionStorage.getItem('wc_auth')==='1'; }
+function doLogin(){
+  const id=gi('lid').value.trim(), pw=gi('lpw').value, c=creds();
+  if(id===c.id&&pw===c.pw){
+    sessionStorage.setItem('wc_auth','1');
+    gi('lp').style.display='none'; gi('dash').style.display='block'; initDash();
+  } else {
+    gi('lerr').style.display='block';
+    setTimeout(()=>gi('lerr').style.display='none',3000);
+  }
+}
+gi('lid').addEventListener('keydown',e=>{ if(e.key==='Enter') gi('lpw').focus(); });
+function doLogout(){ sessionStorage.removeItem('wc_auth'); sessionStorage.removeItem('wc_lastActive'); location.reload(); }
+if(isLogged()){ gi('lp').style.display='none'; gi('dash').style.display='block'; initDash(); }
+
+/* 자동 로그아웃 — 20분 미사용 시 보안을 위해 자동 로그아웃 */
+const AUTO_LOGOUT_MS = 20 * 60 * 1000; // 20분
+function updateLastActive(){ sessionStorage.setItem('wc_lastActive', Date.now()); }
+function checkAutoLogout(){
+  if(!isLogged()) return;
+  const last = parseInt(sessionStorage.getItem('wc_lastActive') || Date.now());
+  if(Date.now() - last > AUTO_LOGOUT_MS){
+    alert('보안을 위해 20분간 활동이 없어 자동 로그아웃되었습니다.\n다시 로그인해 주세요.');
+    doLogout();
+  }
+}
+['click','keydown','mousemove','scroll'].forEach(evt=>{
+  document.addEventListener(evt, updateLastActive, {passive:true});
+});
+updateLastActive();
+setInterval(checkAutoLogout, 60*1000); // 1분마다 체크
+
+/* 데이터 */
+let ARTS=[], SPONSORS=[], fbOK=false;
+
+async function loadArts(){
+  if(window.__db&&window.__fs){
+    try{
+      const {collection,getDocs,orderBy,query}=window.__fs;
+      const q=query(collection(window.__db,'articles'),orderBy('date','desc'));
+      const snap=await getDocs(q);
+      const arr=[];
+      snap.forEach(d=>{
+        const data = d.data();
+        // Firebase 문서 ID를 항상 id로 사용 (내부 id 필드 덮어쓰기)
+        arr.push({...data, id: d.id, _firebaseId: d.id});
+      });
+      fbOK=true;
+      console.log('Firebase 기사 로드:', arr.length+'건', arr.map(a=>a.id));
+      return arr;
+    }catch(e){ console.warn('기사 로드 오류:',e.message); }
+  }
+  try{ return JSON.parse(localStorage.getItem('wolchul_articles')||'[]'); }catch{ return []; }
+}
+
+async function loadSponsors(){
+  if(window.__db&&window.__fs&&fbOK){
+    try{
+      const {collection,getDocs,orderBy,query}=window.__fs;
+      const q=query(collection(window.__db,'sponsors'),orderBy('createdAt','desc'));
+      const snap=await getDocs(q);
+      const arr=[]; snap.forEach(d=>arr.push({id:d.id,...d.data()}));
+      return arr;
+    }catch(e){ console.warn('후원 로드 오류:',e.message); return []; }
+  }
+  try{ return JSON.parse(localStorage.getItem('wolchul_sponsors')||'[]'); }catch{ return []; }
+}
+
+async function saveArtDB(art){
+  // Firebase 우선 저장
+  if(window.__db&&window.__fs&&fbOK){
+    const {collection,addDoc,updateDoc,doc}=window.__fs;
+    const isNew = art._new;
+    delete art._new;
+    // Firebase 문서 ID (_firebaseId 우선, 없으면 id 사용)
+    const docId = art._firebaseId || art.id;
+    // 저장할 데이터 (id, _firebaseId 필드 제외)
+    const data = {...art};
+    delete data.id;
+    delete data._firebaseId;
+
+    console.log('저장 모드:', isNew?'새 문서':'수정', '문서ID:', docId);
+
+    if(isNew){
+      // 새 문서 추가
+      const r = await addDoc(collection(window.__db,'articles'), data);
+      art.id = r.id;
+      art._firebaseId = r.id;
+      console.log('새 문서 생성:', r.id);
+    } else {
+      // 기존 문서 수정
+      try {
+        await updateDoc(doc(window.__db,'articles', String(docId)), data);
+        art.id = docId;
+        console.log('문서 수정 완료:', docId);
+      } catch(e) {
+        console.error('수정 오류:', e.code, e.message);
+        if(e.code === 'not-found' || e.message.includes('No document')) {
+          // 문서가 없으면 새로 추가
+          const r = await addDoc(collection(window.__db,'articles'), data);
+          art.id = r.id;
+          art._firebaseId = r.id;
+          console.log('문서 없어서 새로 생성:', r.id);
+        } else {
+          throw e;
+        }
+      }
+    }
+    return;
+  }
+  // localStorage 저장 (용량 체크)
+  try {
+    const arr=JSON.parse(localStorage.getItem('wolchul_articles')||'[]');
+    const idx=arr.findIndex(a=>a.id===art.id);
+    if(idx>=0) arr[idx]=art; else arr.push(art);
+    localStorage.setItem('wolchul_articles', JSON.stringify(arr));
+  } catch(e) {
+    if(e.name === 'QuotaExceededError') {
+      throw new Error('저장 용량 초과! 본문의 사진을 URL 방식으로 바꿔주세요.');
+    }
+    throw e;
+  }
+}
+
+async function delArtDB(id){
+  console.log('삭제 시도 ID:', id);
+  if(window.__db&&window.__fs&&fbOK){
+    try{
+      const {doc,deleteDoc}=window.__fs;
+      await deleteDoc(doc(window.__db,'articles', String(id)));
+      console.log('Firebase 삭제 완료:', id);
+      return;
+    }catch(e){
+      console.error('Firebase 삭제 오류:', e.message);
+      throw new Error('Firebase 삭제 실패: ' + e.message);
+    }
+  }
+  // localStorage fallback
+  const arr=JSON.parse(localStorage.getItem('wolchul_articles')||'[]').filter(a=>a.id!==id);
+  localStorage.setItem('wolchul_articles',JSON.stringify(arr));
+  console.log('localStorage 삭제 완료:', id);
+}
+
+async function updateSpDB(id, data){
+  if(window.__db&&window.__fs&&fbOK){
+    const {doc,updateDoc}=window.__fs;
+    await updateDoc(doc(window.__db,'sponsors',id), data); return;
+  }
+  const arr=JSON.parse(localStorage.getItem('wolchul_sponsors')||'[]');
+  const idx=arr.findIndex(a=>a.id===id);
+  if(idx>=0){ arr[idx]={...arr[idx],...data}; localStorage.setItem('wolchul_sponsors',JSON.stringify(arr)); }
+}
+
+async function delSpDB(id){
+  if(window.__db&&window.__fs&&fbOK){
+    const {doc,deleteDoc}=window.__fs;
+    await deleteDoc(doc(window.__db,'sponsors',id)); return;
+  }
+  const arr=JSON.parse(localStorage.getItem('wolchul_sponsors')||'[]').filter(a=>a.id!==id);
+  localStorage.setItem('wolchul_sponsors',JSON.stringify(arr));
+}
+
+/* 초기화 */
+async function initDash(){
+  ARTS=await loadArts();
+  SPONSORS=await loadSponsors();
+  updateFbs(); rDash(); loadSetForm();
+  initDropZone();
+}
+
+/* VOL.3 기사 Firebase 일괄 등록 */
+async function uploadVol3Articles(){
+  if(!window.__db||!window.__fs||!fbOK){
+    toast('Firebase가 연결되어야 합니다.','err'); return;
+  }
+  const ok=confirm('VOL.3 기사 24건을 Firebase에 등록합니다.\n기존 기사와 중복되지 않도록 주의해 주세요. 계속하시겠습니까?');
+  if(!ok)return;
+  const {collection,addDoc}=window.__fs;
+  const arts=getVol3Articles();
+  toast('등록 중... 잠시 기다려주세요.','');
+  let ok2=0;
+  for(const art of arts){
+    try{
+      await addDoc(collection(window.__db,'articles'),art);
+      ok2++;
+    }catch(e){ console.warn('등록 실패:',art.title,e.message); }
+  }
+  ARTS=await loadArts();
+  rDash(); rTbl();
+  toast('✅ '+ok2+'건 등록 완료! 웹진을 새로고침하면 반영됩니다.','ok');
+}
+
+function updateFbs(){
+  const els=[gi('fbs'), gi('fbs2')];
+  els.forEach(el=>{
+    if(!el) return;
+    if(fbOK){ el.className='fbs ok'; el.textContent='✅ Firebase 연결됨 — 실시간 반영'; }
+    else{ el.className='fbs warn'; el.textContent='ℹ️ Firebase 미연결 — 이 기기에만 저장됩니다.'; }
+  });
+}
+
+function rDash(){
+  gi('dt').textContent=ARTS.length;
+  gi('dc2').textContent=[...new Set(ARTS.map(a=>a.cat))].length;
+  gi('dsp').textContent=SPONSORS.length;
+  const lt=[...ARTS].sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
+  gi('dd').textContent=lt?(lt.date||'').replace(/-/g,'.'):'없음';
+  const st={};
+  ARTS.forEach(a=>{ st[a.cat]=(st[a.cat]||0)+1; });
+  gi('cs').innerHTML=Object.entries(st).map(([k,v])=>`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:7px">
+      <span style="min-width:76px;font-size:.77rem;font-weight:700">${k}</span>
+      <div style="flex:1;height:7px;background:#eee;border-radius:4px">
+        <div style="height:7px;background:var(--sky);border-radius:4px;width:${Math.round(v/ARTS.length*100)}%"></div>
+      </div>
+      <span style="font-size:.71rem;color:var(--text-s)">${v}건</span>
+    </div>`).join('');
+}
+
+/* 패널 */
+function go(id,btn){
+  document.querySelectorAll('.pn').forEach(p=>p.classList.remove('on'));
+  gi(id).classList.add('on');
+  document.querySelectorAll('.sb-b').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  if(id==='plist') rTbl();
+  if(id==='pdash'){ rDash(); updateFbs(); }
+  if(id==='pset') loadSetForm();
+  if(id==='psponsor') rSpTbl();
+}
+
+/* 기사 목록 */
+const CC={관장인사말:'#5bb8e8',발자취:'#8b5e8b',프로그램:'#2e8b57',나들이:'#e8960a',지역사회:'#e8608a',공모사업:'#1a6b8b',후원봉사:'#2e6b4a',소식:'#666'};
+function rTbl(){
+  const sq=(gi('ts').value||'').toLowerCase(), sc=gi('tcf').value;
+  const list=ARTS.filter(a=>(!sq||a.title.toLowerCase().includes(sq))&&(!sc||a.cat===sc));
+  gi('ac').textContent=list.length+'건';
+  gi('at').innerHTML=list.map((a,i)=>`
+    <tr>
+      <td style="color:var(--text-s);font-size:.71rem">${i+1}</td>
+      <td><div class="tc">${a.title}</div></td>
+      <td><span class="chip" style="background:${CC[a.cat]||'#eee'}22;color:${CC[a.cat]||'#666'}">${a.cat}</span></td>
+      <td style="font-size:.72rem;color:var(--text-s)">${(a.date||'').replace(/-/g,'.')}</td>
+      <td><div class="acts">
+        <button class="btn bo bsm" onclick="editArt('${a.id}')">✏️ 수정</button>
+        <button class="btn bd bsm" onclick="askDel('${a.id}','${a.title.replace(/'/g,"\\'")}','art')">삭제</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+/* ★ 후원 신청 목록 */
+const TYPE_LABEL={regular:'💳 정기 후원',once:'🎁 일시 후원',goods:'📦 물품 후원',vol:'🙌 자원봉사'};
+const STATUS_COLOR={신청:'#5bb8e8',확인중:'#e8960a',완료:'#2e8b57'};
+let curSpId=null;
+
+/* 개인정보 마스킹 유틸 */
+function maskName(name){
+  if(!name) return '—';
+  if(name.length<=1) return name;
+  if(name.length===2) return name[0]+'*';
+  return name[0]+'*'.repeat(name.length-2)+name[name.length-1];
+}
+function maskPhone(phone){
+  if(!phone) return '—';
+  const digits = phone.replace(/[^0-9]/g,'');
+  if(digits.length<8) return phone;
+  return digits.slice(0,3)+'-****-'+digits.slice(-4);
+}
+
+let spMaskOn = true; // 기본값: 마스킹 켜짐(목록 보호)
+
+function toggleSpMask(){
+  spMaskOn = !spMaskOn;
+  gi('spMaskBtn').textContent = spMaskOn ? '🔒 개인정보 가리기 ON' : '🔓 개인정보 표시 중';
+  gi('spMaskBtn').classList.toggle('bgold', !spMaskOn);
+  rSpTbl();
+}
+
+function rSpTbl(){
+  const sq=(gi('spSearch').value||'').toLowerCase();
+  const sf=gi('spTypeFilter').value;
+  const ss=gi('spStatusFilter').value;
+  const list=SPONSORS.filter(s=>{
+    const mq=!sq||(s.name||'').includes(sq)||(s.phone||'').includes(sq);
+    const mt=!sf||s.type===sf;
+    const ms=!ss||(s.status||'신청')===ss;
+    return mq&&mt&&ms;
+  });
+  gi('spCnt').textContent=list.length+'건';
+  if(!list.length){
+    gi('spBody').innerHTML='';
+    gi('spEmpty').style.display='block'; return;
+  }
+  gi('spEmpty').style.display='none';
+  gi('spBody').innerHTML=list.map((s,i)=>{
+    const status=s.status||'신청';
+    const date=(s.createdAt||s.date||'').toString().substring(0,10).replace(/-/g,'.');
+    const amt=s.amount?parseInt(s.amount).toLocaleString()+'원':'—';
+    const dispName = spMaskOn ? maskName(s.name) : (s.name||'—');
+    const dispPhone = spMaskOn ? maskPhone(s.phone) : (s.phone||'—');
+    return `<tr>
+      <td style="color:var(--text-s);font-size:.71rem">${i+1}</td>
+      <td style="font-size:.75rem;color:var(--text-s)">${date}</td>
+      <td style="font-weight:700">${dispName}</td>
+      <td style="font-size:.78rem">${dispPhone}</td>
+      <td><span class="chip" style="background:${STATUS_COLOR[status]||'#eee'}22;color:${STATUS_COLOR[status]||'#666'}">${TYPE_LABEL[s.type]||s.type||'—'}</span></td>
+      <td style="font-size:.78rem;font-weight:700">${amt}</td>
+      <td><span class="chip" style="background:${STATUS_COLOR[status]}22;color:${STATUS_COLOR[status]}">${status}</span></td>
+      <td><button class="btn bo bsm" onclick="openSpDetail('${s.id}')">상세 보기</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function openSpDetail(id){
+  const s=SPONSORS.find(x=>x.id===id); if(!s)return;
+  curSpId=id;
+  const date=(s.createdAt||s.date||'').toString().substring(0,10).replace(/-/g,'.');
+  gi('dh-date').textContent='신청일: '+date;
+  gi('spStatusSel').value=s.status||'신청';
+  const rows=[
+    ['신청 유형', TYPE_LABEL[s.type]||s.type||'—'],
+    ['신청인', s.name||'—'],
+    ['연락처', s.phone||'—'],
+    ['이메일', s.email||'—'],
+    ['생년월일', s.birth||'—'],
+    ['주소', s.addr||'—'],
+    ['후원 금액', s.amount?parseInt(s.amount).toLocaleString()+'원':'—'],
+    ['입금 방법', s.payMethod==='cms'?'CMS 자동이체':'직접 송금'],
+    ['전달 말씀', s.message||'—'],
+    ['소식 수신 동의', s.marketingConsent ? '동의함' : '미동의'],
+    ['상태', s.status||'신청'],
+  ];
+  gi('dContent').innerHTML =
+    '<div style="background:var(--gold-l);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:8px 12px;font-size:.71rem;color:#8a5a00;margin-bottom:12px">⚠️ 개인정보입니다. 업무 목적 외 열람·저장·유출을 금지합니다.</div>'
+    + rows.map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv">${v}</div></div>`).join('');
+  gi('spDetail').classList.add('open');
+}
+
+function closeSpDetail(){ gi('spDetail').classList.remove('open'); curSpId=null; }
+
+async function updateSpStatus(){
+  if(!curSpId)return;
+  const status=gi('spStatusSel').value;
+  try{
+    await updateSpDB(curSpId,{status});
+    SPONSORS=await loadSponsors();
+    rSpTbl(); rDash();
+    toast('상태가 업데이트되었습니다.','ok');
+    closeSpDetail();
+  }catch(e){ toast('오류: '+e.message,'err'); }
+}
+
+async function deleteSp(){
+  if(!curSpId)return;
+  if(!confirm('이 신청 내역을 삭제하시겠습니까?'))return;
+  try{
+    await delSpDB(curSpId);
+    SPONSORS=await loadSponsors();
+    closeSpDetail(); rSpTbl(); rDash();
+    toast('삭제되었습니다.','ok');
+  }catch(e){ toast('오류: '+e.message,'err'); }
+}
+
+/* 엑셀(CSV) 다운로드 */
+function exportCsv(){
+  if(!SPONSORS.length){ toast('다운로드할 데이터가 없습니다.','err'); return; }
+  const ok = confirm('⚠️ 개인정보 보호 안내\n\n다운로드되는 파일에는 후원자의 이름, 연락처 등 개인정보가 포함됩니다.\n\n- 업무 목적 외 사용을 금지합니다\n- 파일을 외부에 유출하거나 공유하지 마세요\n- 사용 후 안전하게 삭제해 주세요\n\n위 내용에 동의하고 다운로드하시겠습니까?');
+  if(!ok) return;
+  const headers=['신청일','이름','연락처','이메일','유형','금액','입금방법','전달말씀','소식수신동의','상태'];
+  const rows=SPONSORS.map(s=>[
+    (s.createdAt||s.date||'').toString().substring(0,10),
+    s.name||'', s.phone||'', s.email||'',
+    TYPE_LABEL[s.type]||s.type||'',
+    s.amount||'', s.payMethod==='cms'?'CMS자동이체':'직접송금',
+    (s.message||'').replace(/,/g,' '),
+    s.marketingConsent?'동의':'미동의',
+    s.status||'신청'
+  ]);
+  const csv='\uFEFF'+[headers,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='후원신청접수_'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+  toast('엑셀 파일이 다운로드됩니다!','ok');
+}
+
+/* 에디터 */
+let srcMode=false;
+function newArt(){
+  gi('etl').textContent='✏️ 새 기사 작성';
+  gi('eid').value=''; gi('etti').value=''; gi('ecat').value='관장인사말';
+  gi('eemo').value='📝'; gi('edat').value=new Date().toISOString().split('T')[0];
+  gi('eaut').value='기획홍보팀'; gi('efea').value='false';
+  gi('esum').value=''; gi('cedit').innerHTML=''; gi('csrc').value='';
+  gi('imgPrev').innerHTML=''; gi('imgUrl').value='';
+  srcMode=false; gi('cedit').style.display=''; gi('csrc').style.display='none';
+  go('peditor',null);
+  setTimeout(()=>initDropZone(), 100);
+}
+function editArt(id){
+  const a=ARTS.find(x=>x.id==id||x.id===id||x._firebaseId===id); if(!a)return;
+  const useId = a._firebaseId || a.id;
+  console.log('수정할 기사 - Firebase ID:', useId, '내부 ID:', a.id);
+  gi('etl').textContent='✏️ 기사 수정';
+  gi('eid').value=useId; gi('etti').value=a.title||'';
+  gi('ecat').value=a.cat||'관장인사말'; gi('eemo').value=a.emoji||'📄';
+  gi('edat').value=a.date||''; gi('eaut').value=a.author||'';
+  gi('efea').value=a.featured?'true':'false'; gi('esum').value=a.summary||'';
+  gi('cedit').innerHTML=a.content||''; gi('csrc').value=a.content||'';
+  gi('imgPrev').innerHTML=''; gi('imgUrl').value='';
+  srcMode=false; gi('cedit').style.display=''; gi('csrc').style.display='none';
+  go('peditor',null);
+  setTimeout(()=>initDropZone(), 100);
+}
+
+/* ★ 드래그 앤 드롭 사진 업로드 */
+function initDropZone() {
+  const zone = gi('dropZone');
+  const input = gi('fileInput');
+  if(!zone || !input) return;
+
+  // 중복 이벤트 방지 — 기존 이벤트 제거 후 재등록
+  const newZone = zone.cloneNode(true);
+  zone.parentNode.replaceChild(newZone, zone);
+  const newInput = newZone.querySelector('#fileInput') || gi('fileInput');
+
+  // 파일 선택 (클릭)
+  newInput.addEventListener('change', e => {
+    handleFiles(Array.from(e.target.files));
+    newInput.value = '';
+  });
+
+  // 드래그 이벤트
+  newZone.addEventListener('dragover', e => {
+    e.preventDefault(); newZone.classList.add('drag-over');
+  });
+  newZone.addEventListener('dragleave', e => {
+    if(!newZone.contains(e.relatedTarget)) newZone.classList.remove('drag-over');
+  });
+  newZone.addEventListener('drop', e => {
+    e.preventDefault(); newZone.classList.remove('drag-over');
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    if(!files.length){ toast('이미지 파일만 업로드 가능합니다.','err'); return; }
+    handleFiles(files);
+  });
+}
+
+function handleFiles(files) {
+  // localStorage 용량 한도로 인해 Base64 직접 저장 불가
+  // 구글 드라이브 업로드 후 URL 사용 안내
+  if(!files.length) return;
+  const names = files.map(f=>f.name).join(', ');
+  toast('📎 사진은 구글 드라이브에 업로드 후 URL을 입력해주세요.', 'err');
+
+  // 안내 메시지를 드롭존에 표시
+  const zone = document.querySelector('.drop-zone') || gi('dropZone');
+  if(zone) {
+    const guide = zone.querySelector('.drop-guide-msg');
+    if(!guide) {
+      const msg = document.createElement('div');
+      msg.className = 'drop-guide-msg';
+      msg.style.cssText = 'margin-top:10px;padding:10px 14px;background:#fff3e0;border:1.5px solid #e8960a;border-radius:8px;font-size:.75rem;color:#7a4400;text-align:left;line-height:1.7';
+      msg.innerHTML = '📌 <strong>사진 추가 방법</strong><br>'
+        + '① <a href="https://drive.google.com" target="_blank" style="color:var(--sky)">Google Drive</a>에 사진 업로드<br>'
+        + '② 사진 우클릭 → 공유 → <strong>링크가 있는 모든 사용자</strong> → 링크 복사<br>'
+        + '③ 아래 URL 입력창에 붙여넣기 → 삽입 클릭';
+      zone.appendChild(msg);
+    }
+  }
+}
+
+function addPreview(src, name) {
+  const el = document.createElement('div');
+  el.className = 'ipi';
+  el.innerHTML =
+    '<img src="' + src + '">' +
+    '<div class="ipi-name">' + (name||'').substring(0,10) + '</div>' +
+    '<button class="ipd" onclick="this.parentElement.remove()" type="button">✕</button>';
+  gi('imgPrev').appendChild(el);
+}
+
+// URL 직접 입력
+function insertImgUrl(){
+  let url = gi('imgUrl').value.trim();
+  if(!url){ toast('URL을 입력해주세요.','err'); return; }
+  const gd1 = url.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+  if(gd1) url = 'https://drive.google.com/uc?export=view&id=' + gd1[1];
+  gi('cedit').focus();
+  document.execCommand('insertHTML', false,
+    '<figure style="margin:16px 0;text-align:center">' +
+    '<img src="' + url + '" alt="기사 사진" style="max-width:100%;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.12)">' +
+    '<br></figure>'
+  );
+  addPreview(url, '');
+  gi('imgUrl').value = '';
+  toast('사진이 삽입되었습니다!', 'ok');
+}
+
+// 기존 함수명 호환
+function insertImg(){ insertImgUrl(); }
+
+async function saveArt(){
+  const title=gi('etti').value.trim(), summary=gi('esum').value.trim();
+  const cont=srcMode?gi('csrc').value:gi('cedit').innerHTML.trim();
+  if(!title){ toast('제목을 입력해주세요.','err'); return; }
+  if(!summary){ toast('요약을 입력해주세요.','err'); return; }
+  if(!cont||cont==='<br>'){ toast('본문 내용을 입력해주세요.','err'); return; }
+  const rawId=gi('eid').value, isNew=!rawId;
+  const art={
+    id:isNew?'art_'+Date.now():rawId,
+    title, cat:gi('ecat').value, emoji:gi('eemo').value||'📄',
+    date:gi('edat').value, author:gi('eaut').value,
+    featured:gi('efea').value==='true',
+    summary, content:cont, _new:isNew
+  };
+  toast('저장 중...','');
+  try{
+    await saveArtDB(art);
+    ARTS=await loadArts();
+    toast(isNew?'✅ 새 기사가 등록되었습니다! 웹진을 새로고침하세요.':'✅ 기사가 수정되었습니다! 웹진을 새로고침하세요.','ok');
+    setTimeout(()=>go('plist',null),1000);
+  }catch(e){
+    toast('❌ 저장 오류: '+e.message,'err');
+    console.error('저장 오류:', e);
+  }
+}
+
+function toggleSrc(){
+  srcMode=!srcMode;
+  if(srcMode){ gi('csrc').value=gi('cedit').innerHTML; gi('cedit').style.display='none'; gi('csrc').style.display='block'; gi('srcBtn').textContent='편집기'; }
+  else{ gi('cedit').innerHTML=gi('csrc').value; gi('csrc').style.display='none'; gi('cedit').style.display='block'; gi('srcBtn').textContent='HTML'; }
+}
+function fmt(cmd){ gi('cedit').focus(); document.execCommand(cmd,false,null); }
+function iTag(tag){ gi('cedit').focus(); document.execCommand('formatBlock',false,'<'+tag+'>'); }
+function prevArt(){
+  gi('pvcat').textContent=gi('ecat').value;
+  gi('pvtitle').textContent=gi('etti').value;
+  gi('pvmeta').textContent='📅 '+(gi('edat').value||'').replace(/-/g,'.')+' ✍️ '+gi('eaut').value;
+  gi('pvcontent').innerHTML=srcMode?gi('csrc').value:gi('cedit').innerHTML;
+  gi('pov').style.display='block';
+}
+
+/* 삭제 */
+let delId=null, delType=null;
+function askDel(id,title,type){
+  delId=id; delType=type;
+  gi('confMsg').textContent='"'+title+'" 을(를) 삭제하시겠습니까? 되돌릴 수 없습니다.';
+  gi('confDel').classList.add('open');
+}
+function closeConf(){ gi('confDel').classList.remove('open'); delId=null; delType=null; }
+async function doDelete(){
+  if(!delId)return;
+  try{
+    toast('삭제 중...','');
+    await delArtDB(delId);
+    ARTS=await loadArts();
+    closeConf(); rTbl(); rDash();
+    toast('✅ 삭제되었습니다! 웹진을 새로고침하면 반영됩니다.','ok');
+  }catch(e){
+    toast('❌ 삭제 오류: '+e.message,'err');
+    console.error('삭제 오류 상세:', e);
+  }
+}
+
+/* 설정 */
+function getSetting(){
+  const d={title:'월출어람',vol:'VOL. 2호',addr:'전라남도 영암군 영암읍 오리정길 37',
+    tel:'061-470-6743',fax:'061-470-6769',email:'yasg2025@naver.com',web:'www.yajb.org',
+    acc1:'광주은행 1107-021-791537',acc2:'광주은행 1107-021-791571',
+    accName:'영암군장애인종합복지관',donTel:'061-470-6743'};
+  try{ return Object.assign(d,JSON.parse(localStorage.getItem('wc_set')||'{}')); }catch{ return d; }
+}
+function loadSetForm(){
+  const s=getSetting();
+  const sv=(id,val)=>{ const e=gi(id); if(e) e.value=val||''; };
+  sv('sttl',s.title); sv('svol',s.vol);
+  sv('sheroAccent',s.heroAccent); sv('sheroDesc',s.heroDesc);
+  sv('sadr',s.addr); sv('stel',s.tel); sv('sfax',s.fax);
+  sv('seml',s.email); sv('sweb',s.web);
+  sv('sa1',s.acc1); sv('sa2',s.acc2);
+  sv('san',s.accName); sv('sdt',s.donTel);
+}
+function saveSetting(){
+  const s={
+    title: gi('sttl')?.value||'',
+    vol: gi('svol')?.value||'',
+    heroAccent: gi('sheroAccent')?.value||'',
+    heroDesc: gi('sheroDesc')?.value||'',
+    addr: gi('sadr')?.value||'',
+    tel: gi('stel')?.value||'',
+    fax: gi('sfax')?.value||'',
+    email: gi('seml')?.value||'',
+    web: gi('sweb')?.value||'',
+    acc1: gi('sa1')?.value||'',
+    acc2: gi('sa2')?.value||'',
+    accName: gi('san')?.value||'',
+    donTel: gi('sdt')?.value||''
+  };
+  localStorage.setItem('wc_set', JSON.stringify(s));
+  toast('저장되었습니다! 웹진을 새로고침하면 반영됩니다. 🎉','ok');
+}
+
+/* 비밀번호 */
+function chgPw(){
+  const cur=gi('pwc').value, nw=gi('pwn').value, nw2=gi('pwn2').value;
+  if(cur!==creds().pw){ toast('현재 비밀번호가 틀립니다.','err'); return; }
+  if(nw.length<6){ toast('6자 이상 입력해주세요.','err'); return; }
+  if(nw!==nw2){ toast('새 비밀번호가 일치하지 않습니다.','err'); return; }
+  localStorage.setItem('adm_pw',nw);
+  ['pwc','pwn','pwn2'].forEach(id=>gi(id).value='');
+  toast('비밀번호가 변경되었습니다.','ok');
+}
+
+/* 카테고리별 이동 */
+function goCat(cat, btn) {
+  // 기사 목록 패널로 이동 후 카테고리 필터 적용
+  document.querySelectorAll('.pn').forEach(p=>p.classList.remove('on'));
+  gi('plist').classList.add('on');
+  document.querySelectorAll('.sb-b').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  // 카테고리 필터 적용
+  gi('tcf').value = cat;
+  gi('ts').value = '';
+  rTbl();
+}
+
+/* VOL.3 기사 데이터 */
+function getVol3Articles(){
+  return [
+    {cat:'관장인사말',emoji:'📝',featured:true,date:'2026-07-01',author:'관장 김철진',
+     title:'함께해 주셔서 감사합니다 — 관장 김철진',
+     summary:'2026년 상반기, 우리 복지관은 이용인과 지역사회와 함께 수많은 소중한 순간들을 만들어왔습니다.',
+     content:'<p>안녕하십니까? 영암군장애인종합복지관 관장 김철진입니다.</p><p>2026년 상반기 동안 이용인과 가족, 지역사회 관계자 여러분께서 보내주신 따뜻한 관심과 응원에 깊이 감사드립니다.</p><p>올 상반기에는 찾아가는 시무식, 계절학교, 체력인증검사, 명절 특식, 이용인 간담회, 장애인의 날 행사, 어버이날 행사, 발달장애인 자조모임 나들이, 왕인문화축제 참여, 보조기기 서비스, 사진공모전, 장애인권교육아카데미 등 다채로운 사업을 통해 이용인 여러분과 함께 소중한 시간을 만들어왔습니다.</p><p>특히 HD현대삼호의 따뜻한 후원으로 내부 시설 리모델링 사업을 추진하게 되어, 더 안전하고 문턱 없는 복지관으로 거듭나게 되었습니다.</p><p style="text-align:right;font-weight:700;margin-top:20px">나누는 사랑, 커지는 행복, 함께하는 장애인복지<br>영암군장애인종합복지관 관장 김철진 배상</p>'},
+    {cat:'발자취',emoji:'🗓️',featured:false,date:'2026-07-01',author:'기획홍보팀',
+     title:'2026년 상반기 함께 걸어온 복지관 발자취',
+     summary:'찾아가는 시무식부터 장애인권교육아카데미까지 — 2026년 상반기 주요 활동을 한눈에 돌아봅니다.',
+     content:'<p><strong>1월:</strong> 1/2 찾아가는 시무식</p><p><strong>2월:</strong> 계절학교 / 2/4 장애인체력인증검사 / 2/10~13 명절맞이 떡국·장어 특식 / 2/12 이용인 간담회</p><p><strong>3월:</strong> 3/6 세계여성의날 행사 / 3/20 갈이가영 거리캠페인 / 3/20 보조기기서비스</p><p><strong>4월:</strong> 4/3~7 왕인문화축제 / 4/8 재가장애인 나들이 / 4/10 너는나의봄이다 행사 / 4/17 체육대회 / 4/20 장애인의 날 행사 / 4/27 이침봉사&헌혈</p><p><strong>5월:</strong> 5/8 어버이날 행사 / 5/18 영다락방 / 5/22 연탄배달</p><p><strong>6월:</strong> 6/1 국가유공자 방문 / 6/2 사진공모전 / 6/9 장애성인 평생교육프로그램 / 6/10 약바르게 쓰기 교육 / 6/29~30 장애인인권교육아카데미</p>'},
+    {cat:'지역사회',emoji:'🏢',featured:false,date:'2026-01-02',author:'기획홍보팀',
+     title:'찾아가는 시무식 — 지역사회와 더욱 가까이',
+     summary:'2026년 희망찬 새해를 맞이하여 영암군 내 유관 기관과 이웃 상점, 지역 주민들을 직접 찾아뵙고 따뜻한 새해 덕담을 나눴습니다.',
+     content:'<p>2026년 희망찬 새해를 맞이하여 지역 사회와 더욱 가까이 소통하기 위한 찾아가는 시무식을 진행했습니다. 영암군 내 유관 기관과 이웃 상점, 지역 주민분들을 직접 찾아뵙고 따뜻한 새해 덕담을 나누며 복지관의 다양한 활동을 안내해 드렸습니다.</p><p>올 한 해도 지역 주민의 목소리에 귀 기울이며 먼저 다가가고 교류하는 영암군장애인종합복지관이 되겠습니다!</p>'},
+    {cat:'프로그램',emoji:'☀️',featured:false,date:'2026-02-13',author:'평생교육지원팀',
+     title:'함께여서 더 즐거운 겨울방학 — 계절학교',
+     summary:'2월 2일부터 13일까지 계절학교를 운영했습니다. 보호자의 돌봄 부담은 줄이고, 학생들에게는 친구들과 어울리는 소중한 시간을 선물했습니다.',
+     content:'<p>장애학생들의 신나는 겨울방학을 위해 2월 2일부터 13일까지 계절학교를 운영했어요! 현장 체험, 요리, 미술 등 다채로운 체험 프로그램으로 꽉꽉 채워 학생들이 더욱 활짝 웃으며 참여할 수 있었어요. 모두에게 즐겁고 보람찬 겨울방학 추억을 남겨주었습니다!</p>'},
+    {cat:'프로그램',emoji:'💪',featured:false,date:'2026-04-08',author:'맞춤기능향상팀',
+     title:'전남 장애인 체력인증검사 — 든든한 건강관리',
+     summary:'전라남도장애인체력인증센터와 함께 2월 4일과 4월 8일 두 차례 체력측정 서비스를 진행했습니다.',
+     content:'<p>우리 복지관 이용인분들의 든든한 건강 관리를 위해 전라남도장애인체력인증센터와 함께 2월 4일과 4월 8일, 두 차례에 걸쳐 체력측정 서비스를 진행했어요! 인바디 검사와 기초체력 측정을 통해 맞춤형 건강 상담과 운동 처방을 제공했습니다.</p>'},
+    {cat:'지역사회',emoji:'🍲',featured:false,date:'2026-02-13',author:'급식지원팀',
+     title:'명절맞이 특식 — 설맞이 사랑의 떡국 나눔',
+     summary:'민족 대명절 설을 맞이하여 2월 13일, 복지관 이용인 및 가족분들과 함께 따뜻한 떡국 나눔 행사를 가졌습니다.',
+     content:'<p>민족 대명절 설을 맞이하여 2월 13일, 복지관 이용인 및 가족분들과 함께 따뜻한 설맞이 사랑의 떡국 나눔 행사를 가졌어요! 영암군 11개 읍·면 곳곳에 계신 모든 분이 한 분도 소외됨 없이 정겹고 훈훈한 명절을 보내시길 바라는 마음을 한가득 담았답니다.</p>'},
+    {cat:'프로그램',emoji:'🗣️',featured:false,date:'2026-02-12',author:'상담사례지원팀',
+     title:'이용인 간담회 — 여러분의 소중한 목소리를 듣습니다',
+     summary:'이용인분들과 직원들이 한자리에 모여 진솔한 의견을 나누고 서로를 깊이 이해할 수 있었습니다.',
+     content:'<p>이번 간담회는 이용인분들과 우리 직원들이 한자리에 모여 진솔한 의견을 나누고, 서로를 깊이 이해할 수 있었던 참 뜻깊은 시간이었어요! 특히 두근두근 기대되던 행운권 추첨 시간까지 더해져, 다 함께 활짝 웃으며 즐거움을 나누었답니다. 앞으로도 여러분의 소중한 목소리에 언제나 다정하게 귀 기울일게요.</p>'},
+    {cat:'지역사회',emoji:'🎪',featured:false,date:'2026-04-07',author:'지역사회연계팀',
+     title:'왕인문화축제 부스 운영 — 지역사회와 함께',
+     summary:'2026년 4월 왕인문화축제를 맞아 슐런 체험, 지문자 도장 체험 등 다채로운 부스를 운영했습니다.',
+     content:'<p>2026년 4월 왕인문화축제를 맞아 지역 주민분들과 한층 더 가깝게 소통하기 위해 체험 부스를 운영했어요! 슐런 체험과 지문자 도장 체험을 통해 자연스럽게 장애에 대해 이해하는 시간을 나누었습니다. 발달장애인 자조모임 별빛소원 회원들도 함께 참여해 더욱 뜻깊었습니다.</p>'},
+    {cat:'프로그램',emoji:'🗳️',featured:false,date:'2026-04-20',author:'맞춤기능향상팀',
+     title:'자기결정프로그램 모의투표 — 스스로 선택하는 힘',
+     summary:'4월 20일 영암군선거관리위원회와 함께 모의투표 프로그램을 진행했습니다.',
+     content:'<p>지난 4월 20일 영암군선거관리위원회와 함께 모의투표 프로그램을 진행했어요! 신분 확인부터 투표용지 수령, 기표, 투표함 투입까지 실제 선거와 똑같은 과정을 생생하게 체험해 보았답니다. 스스로 결정하고 당당하게 권리를 행사하는 기쁨을 느끼셨기를 바랍니다.</p>'},
+    {cat:'지역사회',emoji:'🩸',featured:false,date:'2026-04-27',author:'지역사회연계팀',
+     title:'이침봉사 & 헌혈 — 세한대학교와 함께하는 나눔',
+     summary:'세한대학교 이침봉사단과 함께 이용인을 모시고 건강과 온기를 나누며, 헌혈 활동도 실천했습니다.',
+     content:'<p>세한대학교 이침봉사단과 함께 복지관 이용인분들을 직접 모시고 건강과 따뜻한 온기를 나누는 참 뜻깊은 시간을 보냈어요! 생명을 살리는 헌혈 활동까지 함께 실천하며, 장애인과 비장애인이 다 같이 어우러지는 따뜻한 공동체를 만들어가는 좋은 계기가 되었답니다.</p>'},
+    {cat:'프로그램',emoji:'👴',featured:false,date:'2026-05-08',author:'평생교육지원팀',
+     title:'어버이날 행사 — 사랑해孝 감사해孝',
+     summary:'5월 8일 복지관 밀알홀에서 지역 내 70세 이상 어르신들을 모시고 기념행사를 열었습니다.',
+     content:'<p>지난 5월 8일 어버이날을 맞아, 복지관 밀알홀에서 지역 내 70세 이상 어르신들을 모시고 사랑해孝 감사해孝 기념행사를 열었어요! 풍물팀과 난타팀의 공연, 어린이집 아이들의 카네이션 전달, 이사장님 인사말, 이용인 시 낭송과 편지 낭송, 직원들의 감사 노래까지 훈훈하게 마무리했습니다.</p>'},
+    {cat:'나들이',emoji:'🚢',featured:false,date:'2026-05-18',author:'상담사례지원팀',
+     title:'발달장애인 자조모임 목포 나들이 — 별빛소원',
+     summary:'따뜻한 5월 별빛소원 회원분들이 직접 계획하고 목포로 나들이를 다녀왔습니다.',
+     content:'<p>따뜻한 5월을 맞아 발달장애인 자조모임 별빛소원 회원분들이 직접 계획하고 목포로 신나는 나들이를 다녀왔어요! 목포해상케이블카를 타고 탁 트인 다도해 풍경을 한눈에 담으며, 목포 스카이워크도 걸었습니다. 스스로 정한 여행이라 더욱 뜻깊었습니다!</p>'},
+    {cat:'지역사회',emoji:'🌿',featured:false,date:'2026-05-22',author:'지역사회연계팀',
+     title:'갈이 가영 장애인자원봉사단 — 영암 곳곳에 따뜻한 손길',
+     summary:"매월 정기적으로 영암 관내 장터와 거리를 돌며 환경 정화와 장애인 인식개선 캠페인을 활기차게 진행하고 있습니다.",
+     content:'<p>우리 복지관의 자랑, 갈이 가영 장애인자원봉사단이 영암 곳곳에 따뜻한 손길을 전하고 있어요! 매월 정기적으로 영암 관내 장터와 거리를 돌며 깨끗하게 환경을 가꾸고, 지역 주민분들과 소통하며 장애인 인식개선 캠페인도 진행합니다. 앞으로도 많은 응원 부탁드립니다!</p>'},
+    {cat:'프로그램',emoji:'📸',featured:false,date:'2026-06-02',author:'기획홍보팀',
+     title:'사진공모전 — 영암군 장애인 우리 가족 사진전',
+     summary:'5월 가정의 달을 기념하여 영암군 장애인 우리 가족 사진 공모전 시상식이 열렸습니다.',
+     content:'<p>지난 6월 2일, 5월 가정의 달을 기념하여 영암군 장애인 우리 가족 사진 공모전 시상식이 따뜻한 분위기 속에서 열렸어요! 가족과 함께하는 행복한 일상을 나누고 서로를 향한 사랑과 화합을 알리기 위해 마련된 행사로, 사랑이 듬뿍 담긴 멋진 사진들이 출품되었습니다.</p>'},
+    {cat:'프로그램',emoji:'💊',featured:false,date:'2026-06-10',author:'맞춤기능향상팀',
+     title:'약바르게 쓰기 교육 — 건강관리교육 실시',
+     summary:'6월 10일 이용인분들의 건강하고 활기찬 일상을 위해 유익한 건강관리교육을 진행했습니다.',
+     content:'<p>지난 6월 10일, 이용인분들이 더욱 건강하고 활기찬 일상을 보내실 수 있도록 유익한 건강관리교육을 진행했어요! 스스로 내 몸 상태를 꼼꼼히 점검하고 올바른 건강 습관을 기를 수 있는 다양한 사례들을 곁들여 유익한 시간을 가졌습니다.</p>'},
+    {cat:'지역사회',emoji:'🌍',featured:false,date:'2026-03-06',author:'지역사회연계팀',
+     title:'지역사회공헌활동 — 바리스타 강사지원, 세계여성의날, 국가유공자 방문',
+     summary:'올 상반기 지역카페 바리스타 강사 지원, 세계여성의날 기념행사, 국가유공자 어르신 감사 가정방문 등 다양한 공헌활동을 펼쳤습니다.',
+     content:'<p>올 상반기에는 지역사회를 위한 다양하고 따뜻한 공헌활동을 가득 펼쳤어요! 장애인 일자리 창출을 위한 지역 카페 바리스타 강사 지원, 세계여성의날(3/6) 기념행사, 현충일을 맞아 국가유공자 어르신 댁을 직접 찾아뵙는 감사 가정방문(6/2)까지 참 뜻깊은 시간들이었습니다.</p>'},
+    {cat:'공모사업',emoji:'🏆',featured:false,date:'2026-04-28',author:'기획홍보팀',
+     title:'2026 청년포럼 청년주도 개선활동 지원사업 선정',
+     summary:'한국장애인재활협회 주관 2026 청년포럼 공모에 선정되어 영암군 주요 관광지 장애인 접근성 실태조사 사업을 추진합니다.',
+     content:'<p>영암군장애인종합복지관은 한국장애인재활협회가 주관하는 2026 청년포럼 청년주도 개선활동 사업 공모에 선정되어 열린관광지, 영암군 주요 관광지 장애인 접근성 실태조사 및 개선방안 도출 사업을 추진합니다. 휠체어 이용자의 관점에서 이동 동선, 경사도, 편의시설 등을 직접 조사하여 개선방안을 발굴하게 됩니다.</p>'},
+    {cat:'공모사업',emoji:'🔥',featured:false,date:'2026-05-08',author:'기획홍보팀',
+     title:'2026년도 온 누리 열효율 개선사업 선정',
+     summary:'대구광역시사회복지협의회 주관 2026년 온누리 열효율 개선사업 공모에 선정되어 보일러·창호 교체 공사를 지원받게 되었습니다.',
+     content:'<p>영암군장애인종합복지관이 2026년 온누리 열효율 개선사업 공모에 선정되어 노후화된 보일러와 창호를 교체하는 열효율 개선 공사를 지원받습니다. 이번 공사를 통해 난방 효율을 높이고 이용인들에게 더욱 쾌적하고 안전한 복지서비스 환경을 제공할 것으로 기대됩니다.</p>'},
+    {cat:'공모사업',emoji:'🏥',featured:false,date:'2026-06-05',author:'기획홍보팀',
+     title:'2026년도 저소득 장애인 우체국 암보험 지원사업 선정',
+     summary:'우체국공익재단 주관 사업에 선정되어 지역 내 국민기초생활수급자인 심한 지적장애인 2명의 암보험 가입을 지원했습니다.',
+     content:'<p>영암군장애인종합복지관이 우체국공익재단이 추진하는 2026년 저소득 장애인 우체국 암보험 지원사업에 선정되어 지역 내 국민기초생활수급자인 심한 지적장애인 2명의 암보험 가입을 지원했습니다. 경제적 어려움으로 보험 가입이 어려운 저소득 장애인의 의료비 부담을 완화하기 위해 마련된 사업입니다.</p>'},
+    {cat:'공모사업',emoji:'🎓',featured:false,date:'2026-06-09',author:'평생교육지원팀',
+     title:'2026년도 장애성인 평생교육프로그램 — 국립목포대학교 협력',
+     summary:'국립목포대학교 평생교육원과 협력하여 힐링 베이커리와 퍼스널컬러 이미지메이크업 과정을 운영합니다.',
+     content:'<p>영암군장애인종합복지관이 국립목포대학교 평생교육원과 협력하여 지역 내 등록 장애인을 대상으로 2026 장애인 맞춤형 평생교육 프로그램을 운영합니다. 7월부터 12월까지 힐링 베이커리와 퍼스널컬러 이미지메이크업 과정으로 운영되며, 자기계발과 사회참여 기회를 확대할 것으로 기대됩니다.</p>'},
+    {cat:'공모사업',emoji:'❄️',featured:false,date:'2026-06-10',author:'기획홍보팀',
+     title:'2026년도 에너지취약계층 냉방물품 지원사업 선정',
+     summary:'월드휴먼브리지 주관 사업에 선정되어 지역 내 에너지 취약계층 2가구에 선풍기를 지원했습니다.',
+     content:'<p>영암군장애인종합복지관이 월드휴먼브리지가 추진한 2026 에너지 취약계층 냉방물품 지원사업에 선정되어 지역 내 에너지 취약계층 2가구에 선풍기를 지원했습니다. 폭염으로 어려움을 겪는 취약계층의 건강과 안전을 지키기 위한 사업입니다.</p>'},
+    {cat:'후원봉사',emoji:'🚢',featured:false,date:'2026-07-01',author:'기획홍보팀',
+     title:'"더 안전하고 문턱 없는 복지관으로" — HD현대삼호 후원',
+     summary:'HD현대삼호에서 내부 시설 리모델링 사업비를 후원해 주셨습니다. 무장애 환경 조성의 밑거름이 되어 주셨습니다.',
+     content:'<p>지역사회의 상생과 사회공헌에 앞장서 온 HD현대삼호에서 우리 복지관 이용인들을 위해 리모델링 사업비를 흔쾌히 후원해 주셨습니다. 이번 후원은 장애인 이용인들이 마주했던 물리적 장벽을 허물고 누구나 차별 없이 시설을 이용할 수 있도록 돕는 실질적인 무장애(Barrier-Free) 환경 조성의 밑거름이 되었습니다. HD현대삼호 임직원 여러분께 진심으로 감사드립니다.</p>'},
+    {cat:'지역사회',emoji:'🤝',featured:false,date:'2026-06-22',author:'지역사회연계팀',
+     title:'영암군장애인종합복지관 네트워크 현황 — 상반기 업무협약',
+     summary:'사회적협동조합 오라차차, 목포과학대학교, 국립목포해양대학교 등 7개 기관과 업무협약을 체결했습니다.',
+     content:'<p>2026년 상반기 업무협약 체결 기관: 3/20 사회적협동조합 오라차차 / 4/3 목포과학대학교 / 4/29 국립목포해양대학교 / 5/12 사회고용정책개발원 / 6/10 마음더하기 심리상담치유센터 / 6/18 영암교통문화총연합회 / 6/22 장애인체육회. 이를 통해 장애인 취업 지원, 교육, 심리상담, 지역사회 연계 서비스 등 다양한 분야에서 협력 체계를 구축했습니다.</p>'},
+    {cat:'프로그램',emoji:'📚',featured:false,date:'2026-06-30',author:'인권교육팀',
+     title:'장애인인권교육아카데미 — 나의 권리, 당당하게',
+     summary:'6월 29~30일 이용인분들이 소중한 권리에 대해 이해하고 스스로 선택하는 힘을 기를 수 있도록 아카데미를 진행했습니다.',
+     content:'<p>6월 29~30일 장애인인권교육아카데미를 진행했습니다. 이용인분들이 소중한 권리에 대해 깊이 이해하고 스스로 선택하는 힘을 기를 수 있도록 다양한 교육 프로그램으로 운영되었습니다. 앞으로도 이용인분들의 활발한 사회 참여를 곁에서 든든하게 지원하겠습니다!</p>'}
+  ];
+}
+
+/* 유틸 */
+function gi(id){ return document.getElementById(id); }
+function ls(k){ return localStorage.getItem(k); }
+let toastT=null;
+function toast(msg,type=''){
+  const el=gi('toast'); el.textContent=msg; el.className='toast '+(type||'');
+  requestAnimationFrame(()=>el.classList.add('show'));
+  clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('show'),2800);
+}
+</script>
+</body>
+</html>
