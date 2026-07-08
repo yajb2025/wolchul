@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="영암군장애인종합복지관 소식지 월출어람 — 따뜻한 이야기를 담은 웹진">
+<title>월출어람 | 영암군장애인종합복지관</title>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, getDocs, onSnapshot, orderBy, query }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+const FC = {
+  apiKey:"AIzaSyDixmWj8Ah9vzACGZ6DfL5hAP9sC-H-5Ig",
+  authDomain:"jjjj-6742.firebaseapp.com",
+  projectId:"jjjj-6742",
+  storageBucket:"jjjj-6742.firebasestorage.app",
+  messagingSenderId:"61243262608",
+  appId:"1:61243262608:web:5e9139eb2345fbaf01fa15"
+};
+window.__loadArts = async function() {
+  try {
+    const app = initializeApp(FC);
+    const db  = getFirestore(app);
+    const q   = query(collection(db,'articles'), orderBy('date','desc'));
+    // 3초 타임아웃 — 초과 시 샘플 데이터로 전환
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 3000));
+    const snap = await Promise.race([getDocs(q), timeout]);
+    const arr = []; snap.forEach(d => arr.push({id:d.id,...d.data()}));
+    return arr.length ? arr : null;
+  } catch(e){ return null; }
+};
+</script>
+
+<style>
+/* ── 변수 ── */
+:root {
+  --c1:#1b4332; --c2:#2d6a4f; --c3:#40916c; --c4:#74c69d;
+  --c-pale:#d8f3dc; --c-light:#f0faf2;
+  --acc:#f77f00; --acc-l:#fff3e0;
+  --warm:#fdf6ec;
+  --ink:#1a1a1a; --ink-m:#3d3d3d; --ink-s:#6b7280;
+  --paper:#fafaf8; --white:#fff;
+  --line:#e5e7eb;
+  --r:8px; --r-l:16px;
+  --fs:1;
+}
+.fz-l{--fs:1.16} .fz-x{--fs:1.38}
+.hi{filter:invert(1) hue-rotate(180deg)}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:calc(16px * var(--fs));scroll-behavior:smooth}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+  background:var(--paper);color:var(--ink);line-height:1.75;transition:filter .3s}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+img{max-width:100%}
+
+/* ── 스킵 ── */
+.skip{position:absolute;top:-9em;left:0;background:var(--c1);color:#fff;
+  padding:8px 18px;z-index:9999;border-radius:0 0 8px 0}
+.skip:focus{top:0}
+
+/* ── 접근성 패널 ── */
+.a11y{background:var(--c1);color:#fff;max-height:0;overflow:hidden;transition:max-height .3s}
+.a11y.open{max-height:140px}
+.a11y-in{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 32px;max-width:1280px;margin:0 auto}
+.a11y-in label{font-size:.72rem;opacity:.75}
+.ag{display:flex;gap:5px}
+.ab{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);
+  color:#fff;border-radius:20px;padding:3px 12px;font-size:.72rem}
+.ab:hover,.ab.on{background:rgba(255,255,255,.3)}
+
+/* ── 상단 바 ── */
+.topbar{background:var(--c1);color:rgba(255,255,255,.7);font-size:.72rem;
+  padding:7px 32px;display:flex;align-items:center;gap:16px}
+.topbar span{display:flex;align-items:center;gap:5px}
+.topbar a{color:rgba(255,255,255,.7)}
+.topbar a:hover{color:#fff}
+.tb-right{margin-left:auto;display:flex;gap:12px}
+
+/* ── 헤더 ── */
+#hd{background:var(--white);position:sticky;top:0;z-index:200;
+  border-bottom:1px solid var(--line);box-shadow:0 1px 12px rgba(0,0,0,.06)}
+.hd-w{max-width:1280px;margin:0 auto;padding:0 32px;height:68px;
+  display:flex;align-items:center;gap:20px}
+.logo{display:flex;align-items:center;gap:14px}
+.logo-mark{width:44px;height:44px;background:var(--c1);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-mark svg{width:26px;height:26px;fill:#fff}
+.logo-ko{font-size:1.05rem;font-weight:900;color:var(--c1);letter-spacing:-.02em}
+.logo-en{font-size:.6rem;color:var(--ink-s);letter-spacing:.12em;text-transform:uppercase;margin-top:1px}
+.gnb{display:flex;align-items:center;gap:0;margin-left:auto}
+.gnb a{padding:8px 14px;font-size:.82rem;font-weight:600;color:var(--ink-m);
+  border-bottom:2px solid transparent;transition:all .18s}
+.gnb a:hover,.gnb a.on{color:var(--c1);border-bottom-color:var(--c1)}
+.gnb-act{display:flex;align-items:center;gap:8px;margin-left:12px}
+.btn-sp{background:var(--acc);color:#fff;border:none;border-radius:22px;
+  padding:8px 18px;font-size:.8rem;font-weight:700;transition:opacity .18s}
+.btn-sp:hover{opacity:.85}
+.btn-a11y{background:none;border:1px solid var(--line);color:var(--ink-s);
+  border-radius:8px;padding:7px 10px;font-size:.75rem;display:flex;align-items:center;gap:4px}
+.btn-a11y:hover{border-color:var(--c1);color:var(--c1)}
+.btn-mob{display:none;background:none;border:none;padding:8px;color:var(--ink-m)}
+
+/* ── 모바일 메뉴 ── */
+.mob-ov{display:none;position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.45)}
+.mob-ov.open{display:flex}
+.mob-panel{background:var(--white);width:280px;height:100%;padding:20px 0;display:flex;flex-direction:column}
+.mob-logo{padding:0 24px 20px;border-bottom:1px solid var(--line);margin-bottom:10px;font-size:.95rem;font-weight:900;color:var(--c1)}
+.mob-panel a{display:block;padding:12px 24px;font-size:.9rem;font-weight:600;color:var(--ink-m);border-left:3px solid transparent}
+.mob-panel a:hover,.mob-panel a.on{background:var(--c-light);color:var(--c1);border-left-color:var(--c1)}
+.mob-x{background:none;border:none;padding:18px 24px;font-size:1.2rem;color:var(--ink-s);align-self:flex-end}
+
+/* ── 히어로 ── */
+.hero{position:relative;overflow:hidden;background:var(--c1);min-height:520px;
+  display:flex;align-items:center}
+.hero-bg{position:absolute;inset:0;background:
+  radial-gradient(ellipse at 20% 50%, rgba(64,145,108,.4) 0%, transparent 60%),
+  radial-gradient(ellipse at 80% 20%, rgba(116,198,157,.15) 0%, transparent 50%)}
+.hero-grid{position:absolute;inset:0;opacity:.06;
+  background-image:linear-gradient(rgba(255,255,255,.4) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.4) 1px,transparent 1px);
+  background-size:40px 40px}
+.hero-in{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:64px 32px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:0}
+.hero-left{}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);
+  color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.2);
+  border-radius:20px;padding:5px 14px;font-size:.72rem;font-weight:700;
+  letter-spacing:.08em;margin-bottom:20px}
+.hero-tag::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--c4)}
+.hero h1{font-size:3.4rem;font-weight:900;color:#fff;line-height:1.12;
+  letter-spacing:-.04em;margin-bottom:16px}
+.hero h1 .pt{color:var(--c4)}
+.hero-desc{color:rgba(255,255,255,.75);font-size:.92rem;line-height:1.8;margin-bottom:28px;max-width:460px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn-hero-p{background:#fff;color:var(--c1);border:none;border-radius:8px;
+  padding:12px 24px;font-size:.88rem;font-weight:800;transition:all .18s}
+.btn-hero-p:hover{background:var(--c4);color:var(--c1)}
+.btn-hero-s{background:transparent;color:rgba(255,255,255,.85);
+  border:1.5px solid rgba(255,255,255,.4);border-radius:8px;
+  padding:12px 24px;font-size:.88rem;font-weight:700;transition:all .18s}
+.btn-hero-s:hover{border-color:#fff;color:#fff}
+/* 히어로 우측 카드 */
+.hero-card{background:rgba(255,255,255,.08);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.15);border-radius:var(--r-l);padding:24px;
+  display:flex;flex-direction:column;gap:14px}
+.h-stat{display:flex;align-items:center;gap:12px;padding:12px 14px;
+  background:rgba(255,255,255,.07);border-radius:var(--r);border:1px solid rgba(255,255,255,.08)}
+.h-stat-ico{font-size:1.4rem;flex-shrink:0}
+.h-stat-txt strong{display:block;color:#fff;font-size:1.1rem;font-weight:900;line-height:1}
+.h-stat-txt span{color:rgba(255,255,255,.65);font-size:.72rem;margin-top:3px;display:block}
+
+/* ── 섹션 공통 ── */
+.section{padding:64px 0}
+.inner{max-width:1280px;margin:0 auto;padding:0 32px}
+.sec-eyebrow{font-size:.72rem;font-weight:800;color:var(--c3);letter-spacing:.1em;
+  text-transform:uppercase;display:flex;align-items:center;gap:7px;margin-bottom:10px}
+.sec-eyebrow::after{content:'';flex:1;max-width:40px;height:1.5px;background:var(--c4)}
+.sec-title{font-size:1.7rem;font-weight:900;color:var(--ink);letter-spacing:-.03em;margin-bottom:6px}
+.sec-sub{font-size:.88rem;color:var(--ink-s)}
+
+/* ── 필터 바 ── */
+.filter-bar{background:var(--white);border-bottom:1px solid var(--line);
+  padding:14px 0;position:sticky;top:68px;z-index:100}
+.filter-in{max-width:1280px;margin:0 auto;padding:0 32px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.search-box{position:relative;flex:1;max-width:320px}
+.search-box input{width:100%;border:1.5px solid var(--line);border-radius:8px;
+  padding:8px 36px 8px 14px;font-size:.82rem;background:var(--paper);
+  color:var(--ink);outline:none;transition:border .2s}
+.search-box input:focus{border-color:var(--c1);background:var(--white)}
+.search-box svg{position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  fill:var(--ink-s);width:15px;height:15px;pointer-events:none}
+.btn-clr{background:none;border:1px solid var(--line);color:var(--ink-s);
+  border-radius:6px;padding:5px 10px;font-size:.72rem;display:none}
+.btn-clr:hover{border-color:var(--acc);color:var(--acc)}
+.filter-tags{display:flex;gap:6px;flex-wrap:wrap}
+.ftag{border:1.5px solid var(--line);background:var(--white);color:var(--ink-m);
+  border-radius:6px;padding:5px 13px;font-size:.78rem;font-weight:600;transition:all .18s}
+.ftag:hover{border-color:var(--c1);color:var(--c1)}
+.ftag.on{background:var(--c1);border-color:var(--c1);color:#fff}
+
+/* ── 특집 ── */
+.feat-wrap{margin-bottom:48px}
+.feat{display:grid;grid-template-columns:1.1fr 1fr;gap:0;border-radius:var(--r-l);
+  overflow:hidden;background:var(--white);box-shadow:0 4px 24px rgba(0,0,0,.08);
+  border:1px solid var(--line);cursor:pointer;transition:all .22s}
+.feat:hover{box-shadow:0 12px 40px rgba(27,67,50,.15);transform:translateY(-3px)}
+.feat-img{min-height:300px;background:linear-gradient(135deg,var(--c-pale),#b7e4c7);
+  display:flex;align-items:center;justify-content:center;font-size:5rem;
+  position:relative;overflow:hidden}
+.feat-img::after{content:'FEATURED';position:absolute;top:16px;left:16px;
+  background:var(--c1);color:#fff;font-size:.62rem;font-weight:800;
+  letter-spacing:.12em;padding:4px 10px;border-radius:4px}
+.feat-body{padding:36px 32px;display:flex;flex-direction:column;justify-content:center}
+.feat-cat{display:inline-flex;align-items:center;gap:5px;
+  background:var(--c-light);color:var(--c2);border:1px solid var(--c-pale);
+  font-size:.7rem;font-weight:800;padding:4px 10px;border-radius:4px;
+  margin-bottom:14px;width:fit-content;letter-spacing:.05em}
+.feat-body h2{font-size:1.45rem;font-weight:900;line-height:1.38;
+  color:var(--ink);margin-bottom:12px;letter-spacing:-.02em}
+.feat-body p{font-size:.85rem;color:var(--ink-s);line-height:1.8;margin-bottom:18px}
+.feat-meta{font-size:.72rem;color:var(--ink-s);display:flex;gap:14px;
+  padding-top:14px;border-top:1px solid var(--line)}
+.btn-read{display:inline-flex;align-items:center;gap:6px;background:var(--c1);
+  color:#fff;border:none;border-radius:6px;padding:10px 20px;
+  font-size:.82rem;font-weight:700;margin-top:14px;transition:background .18s}
+.btn-read:hover{background:var(--c2)}
+.btn-read svg{width:14px;height:14px;fill:#fff;transition:transform .18s}
+.btn-read:hover svg{transform:translateX(3px)}
+
+/* ── 기사 그리드 ── */
+.grid-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.cnt{font-size:.75rem;color:var(--ink-s)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{background:var(--white);border-radius:var(--r-l);border:1px solid var(--line);
+  overflow:hidden;cursor:pointer;transition:all .22s;display:flex;flex-direction:column}
+.card:hover{box-shadow:0 8px 32px rgba(27,67,50,.12);transform:translateY(-3px);border-color:var(--c-pale)}
+.card:focus{outline:2px solid var(--c1);outline-offset:2px}
+.card-img{height:160px;display:flex;align-items:center;justify-content:center;
+  font-size:2.8rem;position:relative;overflow:hidden}
+.feat-photo,.card-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* 세로 사진은 잘리지 않도록 원본 비율 그대로 표시 */
+.feat-photo.fit-contain,.card-photo.fit-contain{object-fit:contain}
+/* 사진 없는 기사: 이모지 없이 분류 표시만 하고 곧바로 본문 텍스트 */
+.card-noimg{padding:14px 16px 0;display:flex}
+.card-noimg .card-badge-inline{background:var(--c-light);color:var(--c1);
+  font-size:.62rem;font-weight:800;padding:3px 8px;border-radius:4px;
+  letter-spacing:.05em;border:1px solid var(--c-pale)}
+.feat.no-img{grid-template-columns:1fr}
+.card-badge{position:absolute;top:10px;left:10px;background:var(--white);
+  color:var(--c1);font-size:.62rem;font-weight:800;padding:3px 8px;
+  border-radius:4px;letter-spacing:.05em;border:1px solid var(--c-pale)}
+.card-body{padding:16px;flex:1;display:flex;flex-direction:column}
+.card-body h3{font-size:.9rem;font-weight:800;line-height:1.45;
+  color:var(--ink);margin-bottom:8px;letter-spacing:-.01em}
+.card-body p{font-size:.78rem;color:var(--ink-s);line-height:1.7;flex:1;margin-bottom:10px}
+.card-ft{font-size:.7rem;color:var(--ink-s);
+  border-top:1px solid var(--line);padding-top:10px;display:flex;gap:10px}
+
+/* ── 더보기 ── */
+.lm-wrap{text-align:center;margin-top:32px}
+.btn-lm{background:var(--white);border:1.5px solid var(--c1);color:var(--c1);
+  border-radius:8px;padding:11px 32px;font-size:.84rem;font-weight:700;transition:all .18s}
+.btn-lm:hover{background:var(--c1);color:#fff}
+
+/* ── 빈 상태 ── */
+.empty{text-align:center;padding:64px 20px;color:var(--ink-s)}
+.empty p{font-size:.88rem;margin-top:10px;margin-bottom:14px}
+.btn-rs{background:none;border:1.5px solid var(--line);color:var(--ink-s);
+  border-radius:6px;padding:8px 18px;font-size:.8rem}
+.btn-rs:hover{border-color:var(--c1);color:var(--c1)}
+
+/* ── 로딩 ── */
+.loading{text-align:center;padding:72px 20px;color:var(--ink-s)}
+.spin{width:36px;height:36px;border:3px solid var(--line);
+  border-top-color:var(--c1);border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prog-bar{height:3px;background:linear-gradient(90deg,var(--c1),var(--c4));
+  background-size:200%;animation:prog 1.2s linear infinite;display:none}
+.prog-bar.show{display:block}
+@keyframes prog{to{background-position:-200% 0}}
+
+/* ── 후원 섹션 ── */
+.donor{background:var(--c1);padding:72px 0;position:relative;overflow:hidden}
+.donor::before{content:'';position:absolute;top:-60px;right:-60px;
+  width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.04)}
+.donor::after{content:'';position:absolute;bottom:-80px;left:-40px;
+  width:220px;height:220px;border-radius:50%;background:rgba(116,198,157,.1)}
+.donor-in{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.donor-left h2{font-size:2rem;font-weight:900;color:#fff;line-height:1.25;
+  margin-bottom:14px;letter-spacing:-.03em}
+.donor-left p{color:rgba(255,255,255,.75);font-size:.9rem;line-height:1.8}
+.donor-right{display:flex;flex-direction:column;gap:12px}
+.acc-card{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  border-radius:var(--r);padding:14px 18px;display:flex;align-items:center;gap:12px}
+.acc-card-ico{font-size:1.4rem;flex-shrink:0}
+.acc-card p{color:rgba(255,255,255,.9);font-size:.82rem;font-weight:700}
+.acc-card span{color:rgba(255,255,255,.6);font-size:.72rem;display:block;margin-top:2px}
+.btn-donor{background:#fff;color:var(--c1);border:none;border-radius:8px;
+  padding:13px 28px;font-size:.88rem;font-weight:800;margin-top:8px;
+  transition:all .18s;width:fit-content}
+.btn-donor:hover{background:var(--c4)}
+
+/* ── 모달 ── */
+.mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;
+  overflow-y:auto;padding:20px;align-items:flex-start;justify-content:center}
+.mov.open{display:flex}
+.modal{background:var(--white);border-radius:var(--r-l);max-width:740px;
+  width:100%;margin:auto;overflow:hidden;animation:su .25s ease}
+@keyframes su{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+/* 모달 상단 배지줄 (흰 배경) */
+.m-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:16px 22px;border-bottom:1px solid var(--line);background:var(--white)}
+.m-vol{background:#fdeee0;color:#c05600;font-size:.72rem;font-weight:800;
+  padding:5px 13px;border-radius:20px;letter-spacing:.01em}
+.m-cat2{background:var(--c-pale);color:var(--c2);font-size:.72rem;font-weight:800;
+  padding:5px 13px;border-radius:20px}
+.m-date{font-size:.75rem;color:var(--ink-s);font-weight:600}
+.m-close{margin-left:auto;background:none;border:none;color:var(--ink-s);
+  width:34px;height:34px;border-radius:8px;font-size:1.05rem;
+  display:flex;align-items:center;justify-content:center}
+.m-close:hover{background:var(--c-light);color:var(--c1)}
+.m-body{padding:26px 28px}
+.m-body>h2{font-size:1.35rem;font-weight:900;line-height:1.45;
+  letter-spacing:-.02em;color:var(--ink);margin-bottom:8px}
+.m-author{font-size:.78rem;color:var(--ink-s);margin-bottom:18px}
+/* 음성 리더 박스 */
+.tts-box{display:flex;align-items:center;gap:12px;background:#f4f7f4;
+  border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:20px}
+.tts-ico{width:42px;height:42px;background:var(--c1);border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:1.15rem}
+.tts-txt{display:flex;flex-direction:column;line-height:1.4;min-width:0}
+.tts-txt b{font-size:.84rem;color:var(--ink)}
+.tts-txt span{font-size:.72rem;color:var(--ink-s)}
+.tts-ctl{margin-left:auto;display:flex;gap:8px}
+.tts-c{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);
+  background:var(--white);color:var(--ink-m);font-size:.72rem;
+  display:flex;align-items:center;justify-content:center;transition:all .15s}
+.tts-c:hover{border-color:var(--c1);color:var(--c1)}
+.tts-c.main{background:var(--c1);border-color:var(--c1);color:#fff;font-size:.8rem}
+.tts-c.main:hover{background:var(--c2)}
+/* 사진 캐러셀 */
+.carousel{position:relative;border-radius:14px;overflow:hidden;
+  background:#111;margin-bottom:22px}
+.car-view{width:100%;aspect-ratio:4/3;display:flex;
+  align-items:center;justify-content:center}
+.car-view img{width:100%;height:100%;object-fit:contain;display:block}
+.car-btn{position:absolute;top:50%;transform:translateY(-50%);
+  width:44px;height:44px;border-radius:50%;border:none;
+  background:var(--c1);color:#fff;font-size:1.5rem;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 10px rgba(0,0,0,.3);transition:background .15s;z-index:2}
+.car-btn:hover{background:var(--c2)}
+.car-btn.prev{left:12px}
+.car-btn.next{right:12px}
+.car-cnt{position:absolute;top:12px;right:14px;background:rgba(0,0,0,.55);
+  color:#fff;font-size:.7rem;font-weight:700;padding:4px 11px;border-radius:20px}
+.car-dots{position:absolute;bottom:12px;left:0;right:0;
+  display:flex;justify-content:center;gap:7px}
+.car-dots button{width:9px;height:9px;border-radius:50%;border:none;
+  background:rgba(255,255,255,.45);padding:0;transition:all .15s}
+.car-dots button.on{background:#fff;transform:scale(1.25)}
+.m-body p{font-size:.88rem;line-height:1.88;color:var(--ink-m);margin-bottom:14px}
+.m-body h3{font-size:.95rem;font-weight:800;color:var(--c1);margin:18px 0 8px}
+.m-body h4{font-size:.85rem;font-weight:700;color:var(--ink);margin:14px 0 6px}
+.m-body img{max-width:100%;border-radius:var(--r);margin:10px 0}
+.m-body ul{padding-left:18px;margin-bottom:12px}
+.m-body ul li{font-size:.86rem;line-height:1.8;color:var(--ink-m)}
+.m-body strong{color:var(--c1)}
+.m-ft{padding:14px 28px 22px;border-top:1px solid var(--line);
+  display:flex;justify-content:flex-end}
+.btn-mc{background:var(--c1);color:#fff;border:none;border-radius:6px;
+  padding:9px 22px;font-size:.82rem;font-weight:700}
+
+/* ── 푸터 ── */
+footer{background:#0d2818;color:rgba(255,255,255,.65);padding:52px 0 28px}
+.ft-in{max-width:1280px;margin:0 auto;padding:0 32px;
+  display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:32px}
+.ft-logo{font-size:1.05rem;font-weight:900;color:#fff;margin-bottom:4px}
+.ft-name{font-size:.68rem;color:rgba(255,255,255,.45);margin-bottom:12px;letter-spacing:.06em;text-transform:uppercase}
+.ft-info{font-size:.74rem;line-height:2.1}
+.ft-col h4{font-size:.78rem;font-weight:800;color:#fff;margin-bottom:12px;
+  letter-spacing:.06em;text-transform:uppercase}
+.ft-col ul{list-style:none}
+.ft-col ul li{font-size:.74rem;line-height:2.2}
+.ft-col ul li a:hover{color:var(--c4)}
+.ft-acc{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  border-radius:var(--r);padding:10px 14px;margin-top:10px;
+  font-size:.75rem;color:var(--c4);font-weight:700}
+/* 푸터 SNS·QR */
+.ft-sns{max-width:1280px;margin:34px auto 0;padding:0 32px;
+  display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sns-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;
+  transition:all .18s}
+.sns-card:hover{background:rgba(255,255,255,.12);border-color:var(--c4)}
+.sns-head{display:flex;align-items:center;gap:11px;flex:1;
+  font-size:.82rem;font-weight:800;color:#fff;line-height:1.45}
+.sns-head small{font-size:.68rem;font-weight:500;color:rgba(255,255,255,.55)}
+.sns-ico{width:40px;height:40px;border-radius:10px;background:var(--c2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
+.sns-ico svg{width:22px;height:22px}
+.sns-ico.insta{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)}
+.sns-ico.fb{background:#1877f2}
+.sns-card img{width:76px;height:76px;border-radius:8px;background:#fff;padding:4px;flex-shrink:0}
+@media(max-width:760px){.ft-sns{grid-template-columns:1fr}}
+.ft-line{max-width:1280px;margin:28px auto 0;padding:20px 32px 0;
+  border-top:1px solid rgba(255,255,255,.08);font-size:.68rem;color:rgba(255,255,255,.3);
+  display:flex;justify-content:space-between;align-items:center}
+
+/* ── 오프라인 배너 ── */
+.offline{background:var(--acc-l);border-left:4px solid var(--acc);
+  border-radius:0 var(--r) var(--r) 0;padding:10px 16px;
+  font-size:.78rem;color:#7a4400;margin-bottom:22px;display:none}
+
+/* ── 반응형 ── */
+@media(max-width:1024px){
+  .hero-in{grid-template-columns:1fr;gap:32px}
+  .hero-card{display:grid;grid-template-columns:repeat(3,1fr)}
+  .h-stat{flex-direction:column;text-align:center;gap:6px}
+  .feat{grid-template-columns:1fr}
+  .feat-img{min-height:180px}
+  .grid{grid-template-columns:1fr 1fr}
+  .donor-in{grid-template-columns:1fr;gap:28px}
+  .ft-in{grid-template-columns:1fr 1fr}
+}
+@media(max-width:768px){
+  .topbar{display:none}
+  .hd-w{padding:0 20px}
+  .gnb{display:none}
+  .gnb-act .btn-sp{display:none}
+  .btn-mob{display:flex}
+  .hero{min-height:auto}
+  .hero-in{padding:48px 20px}
+  .hero h1{font-size:2.4rem}
+  .filter-in{padding:0 20px}
+  .inner{padding:0 20px}
+  .section{padding:48px 0}
+  .ft-in{grid-template-columns:1fr;gap:24px}
+  .ft-line{flex-direction:column;gap:8px;text-align:center}
+}
+@media(max-width:560px){
+  .grid{grid-template-columns:1fr}
+  .hero h1{font-size:2rem}
+  .donor-in{padding:0 20px}
+  .hero-card{grid-template-columns:1fr}
+  .mov{padding:10px}
+  .m-body{padding:20px 16px}
+  .m-body>h2{font-size:1.12rem}
+  .m-top{padding:12px 14px;gap:7px}
+  .car-btn{width:38px;height:38px;font-size:1.3rem}
+  .car-btn.prev{left:8px}
+  .car-btn.next{right:8px}
+  .tts-box{padding:10px 12px;gap:9px}
+  .tts-c{width:34px;height:34px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip">본문 바로가기</a>
+
+<!-- 접근성 -->
+<div class="a11y" id="a11y">
+  <div class="a11y-in">
+    <label>글자</label>
+    <div class="ag">
+      <button class="ab on" id="fzN" onclick="setFz('n')">보통</button>
+      <button class="ab" id="fzL" onclick="setFz('l')">크게</button>
+      <button class="ab" id="fzX" onclick="setFz('x')">아주 크게</button>
+    </div>
+    <div style="width:1px;height:16px;background:rgba(255,255,255,.2)"></div>
+    <label>화면</label>
+    <div class="ag">
+      <button class="ab on" id="hiN" onclick="setHi(false)">기본</button>
+      <button class="ab" id="hiC" onclick="setHi(true)">고대비</button>
+    </div>
+  </div>
+</div>
+
+<!-- 상단 바 -->
+<div class="topbar">
+  <span>📍 전라남도 영암군 영암읍 오리정길 37</span>
+  <span>📞 061-470-6743</span>
+  <div class="tb-right">
+    <a href="admin.html">관리자</a>
+    <a href="sponsor.html">후원 신청</a>
+  </div>
+</div>
+
+<!-- 헤더 -->
+<div class="prog-bar" id="progBar"></div>
+<header id="hd">
+  <div class="hd-w">
+    <a href="index.html" class="logo">
+      <div class="logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 2-8 2s5-2 5-8c-3 3-6 3-8 3 0-2-1-4-3-4C4 3 4 8 8 8 5 9 4 14 4 14s-1-5 3-6z"/></svg>
+      </div>
+      <div>
+        <div class="logo-ko" id="siteTitle">월출어람</div>
+        <div class="logo-en" id="siteSubtitle">Yeongam Welfare Center</div>
+      </div>
+    </a>
+    <nav class="gnb">
+      <a href="index.html" class="on">소식지 홈</a>
+      <a href="#articles">기사 목록</a>
+      <a href="#donor">후원 안내</a>
+    </nav>
+    <div class="gnb-act">
+      <button class="btn-sp" onclick="location.href='sponsor.html'">💚 후원 신청</button>
+      <button class="btn-a11y" onclick="toggleA11y()">⚙ 접근성</button>
+    </div>
+    <button class="btn-mob" onclick="openMob()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- 모바일 메뉴 -->
+<div class="mob-ov" id="mobOv" onclick="if(event.target===this)closeMob()">
+  <div class="mob-panel">
+    <button class="mob-x" onclick="closeMob()">✕</button>
+    <div class="mob-logo">월출어람</div>
+    <a href="index.html" class="on">소식지 홈</a>
+    <a href="#articles" onclick="closeMob()">기사 목록</a>
+    <a href="#donor" onclick="closeMob()">후원 안내</a>
+    <a href="sponsor.html">💚 후원 신청</a>
+    <a href="admin.html" style="color:#999;margin-top:8px;border-top:1px solid var(--line);padding-top:14px">🔒 관리자</a>
+  </div>
+</div>
+
+<!-- 히어로 -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-in">
+    <div class="hero-left">
+      <div class="hero-tag" id="volTag">VOL. 3호 · 2026년 상반기 소식지</div>
+      <h1 id="heroH1">장애인과 함께<br>걷는 <span class="pt" id="heroAccent">따뜻한 길</span></h1>
+      <p class="hero-desc" id="heroDesc">사회복지법인 전남밀알복지재단 영암군장애인종합복지관의<br>소식과 이야기를 담은 웹진입니다.</p>
+      <div class="hero-btns">
+        <button class="btn-hero-p" onclick="document.getElementById('articles').scrollIntoView({behavior:'smooth'})">기사 보기</button>
+        <button class="btn-hero-s" onclick="location.href='sponsor.html'">후원 신청 →</button>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 필터 -->
+<div class="filter-bar">
+  <div class="filter-in">
+    <div class="search-box">
+      <input type="search" id="srch" placeholder="기사 검색..." oninput="onSearch()">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+    </div>
+    <button class="btn-clr" id="clrBtn" onclick="clearSearch()">✕ 초기화</button>
+    <div class="filter-tags">
+      <button class="ftag on" onclick="setTag('all',this)">전체</button>
+      <button class="ftag" onclick="setTag('함께한 이야기',this)">함께한 이야기</button>
+      <button class="ftag" onclick="setTag('공모사업',this)">공모사업</button>
+      <button class="ftag" onclick="setTag('후원봉사',this)">후원·봉사</button>
+      <button class="ftag" onclick="setTag('소식',this)">소식</button>
+    </div>
+  </div>
+</div>
+
+<main id="main">
+  <div class="inner section" id="articles">
+
+    <!-- 오프라인 -->
+    <div class="offline" id="offlineNote">
+      ℹ️ 현재 샘플 데이터입니다. 관리자 페이지에서 기사를 등록하면 실시간으로 반영됩니다.
+    </div>
+
+    <!-- 로딩 -->
+    <div class="loading" id="loadingBox">
+      <div class="spin"></div>
+      <p>기사를 불러오는 중...</p>
+    </div>
+
+    <!-- 특집 -->
+    <div class="feat-wrap" id="featArea" style="display:none">
+      <div class="sec-eyebrow">Featured</div>
+      <div class="feat" id="featCard" tabindex="0" role="button"></div>
+    </div>
+
+    <!-- 목록 -->
+    <div id="listArea" style="display:none">
+      <div class="grid-hd">
+        <div>
+          <div class="sec-eyebrow">Articles</div>
+          <div class="sec-title" style="font-size:1.2rem">전체 기사</div>
+        </div>
+        <div class="cnt">총 <strong id="cntNum">0</strong>건</div>
+      </div>
+      <div class="grid" id="artGrid" role="list"></div>
+      <div class="empty" id="emptyBox" style="display:none">
+        <div style="font-size:2.5rem">🔍</div>
+        <p id="emptyMsg">검색 결과가 없습니다.</p>
+        <button class="btn-rs" onclick="clearSearch()">초기화</button>
+      </div>
+      <div class="lm-wrap" id="lmBox" style="display:none">
+        <button class="btn-lm" onclick="loadMore()">기사 더보기 ↓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 후원 -->
+  <div class="donor" id="donor">
+    <div class="donor-in">
+      <div class="donor-left">
+        <div class="sec-eyebrow" style="color:var(--c4)">Donation</div>
+        <h2>따뜻한 나눔에<br>함께해 주세요</h2>
+        <p>여러분의 소중한 후원이 영암군 장애인의<br>더 나은 삶을 만들어갑니다.<br>연말정산 기부금 영수증이 자동 발급됩니다.</p>
+        <button class="btn-donor" onclick="location.href='sponsor.html'" style="margin-top:24px">💚 후원 신청하기 →</button>
+      </div>
+      <div class="donor-right">
+        <div class="acc-card">
+          <div class="acc-card-ico">🏦</div>
+          <div>
+            <p id="ftAcc1">비지정후원 · 광주은행 1107-021-791537</p>
+            <span>예금주: 영암군장애인종합복지관</span>
+          </div>
+        </div>
+        <div class="acc-card">
+          <div class="acc-card-ico">🏦</div>
+          <div>
+            <p id="ftAcc2">지정후원 · 광주은행 1107-021-791571</p>
+            <span>예금주: 영암군장애인종합복지관</span>
+          </div>
+        </div>
+        <div class="acc-card">
+          <div class="acc-card-ico">📞</div>
+          <div>
+            <p>후원 문의</p>
+            <span>061-470-6743 | yasg2025@naver.com</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 모달 -->
+<div class="mov" id="movOv" onclick="if(event.target===this)closeModal()" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <div class="m-top">
+      <span class="m-vol" id="mVol">VOL.3 (2026년 상반기)</span>
+      <span class="m-cat2" id="mCat"></span>
+      <span class="m-date" id="mDate"></span>
+      <button class="m-close" onclick="closeModal()" aria-label="닫기">✕</button>
+    </div>
+    <div class="m-body">
+      <h2 id="mTitle"></h2>
+      <div class="m-author" id="mAuthor"></div>
+      <div class="tts-box">
+        <div class="tts-ico" aria-hidden="true">💬</div>
+        <div class="tts-txt">
+          <b>친절한 목소리 리더</b>
+          <span id="ttsState">음성 읽어주기 준비 완료</span>
+        </div>
+        <div class="tts-ctl">
+          <button class="tts-c main" id="ttsPlayBtn" onclick="ttsPlayPause()" aria-label="재생">▶</button>
+          <button class="tts-c" id="ttsPause" onclick="ttsPause()" aria-label="일시정지">❚❚</button>
+          <button class="tts-c" id="ttsStop" onclick="stopTTS()" aria-label="정지">■</button>
+        </div>
+      </div>
+      <div class="carousel" id="carBox" style="display:none" aria-label="기사 사진">
+        <div class="car-view">
+          <img id="carImg" src="" alt="" loading="lazy">
+        </div>
+        <button class="car-btn prev" onclick="carMove(-1)" aria-label="이전 사진">‹</button>
+        <button class="car-btn next" onclick="carMove(1)" aria-label="다음 사진">›</button>
+        <div class="car-cnt" id="carCnt">1 / 1</div>
+        <div class="car-dots" id="carDots"></div>
+      </div>
+      <div id="mContent"></div>
+    </div>
+    <div class="m-ft">
+      <button class="btn-mc" onclick="closeModal()">닫기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<footer>
+  <div class="ft-in">
+    <div>
+      <div class="ft-logo" id="ftTitle">월출어람</div>
+      <div class="ft-name">Yeongam Welfare Center Webzine</div>
+      <div class="ft-info">
+        📍 전라남도 영암군 영암읍 오리정길 37<br>
+        📞 061-470-6743 &nbsp;|&nbsp; 📠 061-470-6769<br>
+        ✉ yasg2025@naver.com &nbsp;|&nbsp; 🌐 www.yajb.org
+      </div>
+    </div>
+    <div class="ft-col">
+      <h4>바로가기</h4>
+      <ul>
+        <li><a href="#articles">기사 목록</a></li>
+        <li><a href="#donor">후원 안내</a></li>
+        <li><a href="sponsor.html">후원 신청</a></li>
+        <li><a href="privacy.html">개인정보처리방침</a></li>
+      </ul>
+    </div>
+    <div class="ft-col">
+      <h4>후원 계좌</h4>
+      <div class="ft-acc">비지정: 광주은행 1107-021-791537</div>
+      <div class="ft-acc" style="margin-top:6px">지정: 광주은행 1107-021-791571</div>
+    </div>
+  </div>
+  <!-- SNS · QR -->
+  <div class="ft-sns">
+    <a class="sns-card" href="https://m.site.naver.com/1LJ9q" target="_blank" rel="noopener">
+      <div class="sns-head">
+        <span class="sns-ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C7.03 2 3 6.03 3 11c0 4.09 2.73 7.55 6.47 8.64-.02-.73-.01-1.61.18-2.4.21-.85 1.36-5.77 1.36-5.77s-.34-.68-.34-1.68c0-1.58.91-2.76 2.05-2.76.97 0 1.44.73 1.44 1.6 0 .97-.62 2.43-.94 3.78-.27 1.13.57 2.05 1.68 2.05 2.02 0 3.38-2.59 3.38-5.66 0-2.33-1.57-4.08-4.43-4.08-3.23 0-5.24 2.41-5.24 5.1 0 .93.27 1.58.7 2.09.2.23.22.33.15.6l-.21.86c-.07.26-.28.35-.52.26-1.45-.59-2.12-2.18-2.12-3.96 0-2.94 2.48-6.47 7.41-6.47 3.96 0 6.56 2.87 6.56 5.94 0 4.07-2.26 7.11-5.6 7.11-1.12 0-2.17-.6-2.53-1.29l-.69 2.73c-.25.9-.74 1.81-1.18 2.51.89.26 1.82.4 2.8.4 4.97 0 9-4.03 9-9s-4.03-9-9-9z" style="display:none"/><path d="M12 3a9 9 0 100 18 9 9 0 000-18zm0 2a7 7 0 110 14 7 7 0 010-14zm-3 4h6v2H9V9zm0 4h6v2H9v-2z"/></svg>
+        </span>
+        <span>홈페이지<br><small>www.yajb.org</small></span>
+      </div>
+      <img src="images/qr/qr-home.png" alt="홈페이지 QR 코드" loading="lazy">
+    </a>
+    <a class="sns-card" href="https://m.site.naver.com/1LJa1" target="_blank" rel="noopener">
+      <div class="sns-head">
+        <span class="sns-ico insta" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm0 2a3 3 0 00-3 3v10a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H7zm5 3.5A4.5 4.5 0 1112 16.5 4.5 4.5 0 0112 7.5zm0 2A2.5 2.5 0 1014.5 12 2.5 2.5 0 0012 9.5zM17.3 5.6a1.1 1.1 0 11-1.1 1.1 1.1 1.1 0 011.1-1.1z"/></svg>
+        </span>
+        <span>인스타그램<br><small>복지관 소식</small></span>
+      </div>
+      <img src="images/qr/qr-insta.png" alt="인스타그램 QR 코드" loading="lazy">
+    </a>
+    <a class="sns-card" href="https://m.site.naver.com/1LJaE" target="_blank" rel="noopener">
+      <div class="sns-head">
+        <span class="sns-ico fb" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 10-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.2c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0022 12z"/></svg>
+        </span>
+        <span>페이스북<br><small>복지관 소식</small></span>
+      </div>
+      <img src="images/qr/qr-facebook.png" alt="페이스북 QR 코드" loading="lazy">
+    </a>
+  </div>
+  <div class="ft-line">
+    <span>© 2026 사회복지법인 전남밀알복지재단 영암군장애인종합복지관. All Rights Reserved.</span>
+    <span><a href="privacy.html" style="opacity:.55">개인정보처리방침</a> &nbsp;|&nbsp; <a href="admin.html" style="opacity:.4">관리자</a></span>
+  </div>
+</footer>
+
+<script>
+/* ── 샘플 데이터 ── */
+const SAMPLE=[
+  {id:'s0',cat:'관장인사말',emoji:'📝',featured:true,date:'2026-07-01',author:'관장 김철진',
+   title:'함께해 주셔서 감사합니다 — 관장 김철진',
+   summary:'2026년 상반기, 우리 복지관은 이용인과 지역사회와 함께 수많은 소중한 순간들을 만들어왔습니다. 여러분의 따뜻한 관심과 응원에 깊이 감사드립니다.',
+   content:`<p>안녕하십니까? 영암군장애인종합복지관 관장 김철진입니다.</p>
+<p>우리 복지관의 소식지 월출어람 3호를 발간하게 되어 기쁩니다. 2026년 상반기 동안 이용인과 가족, 지역사회 관계자 여러분께서 보내주신 따뜻한 관심과 응원에 깊이 감사드립니다.</p>
+<p>올 상반기에는 찾아가는 시무식, 계절학교, 체력인증검사, 명절 특식, 이용인 간담회, 장애인의 날 행사, 어버이날 행사, 발달장애인 자조모임 나들이, 왕인문화축제 참여, 보조기기 서비스, 사진공모전, 장애인권교육아카데미 등 다채로운 사업을 통해 이용인 여러분과 함께 소중한 시간을 만들어왔습니다.</p>
+<p>또한 청년포럼 공모사업, 온누리 열효율 개선사업, 저소득 장애인 암보험 지원사업, 장애성인 평생교육프로그램, 에너지취약계층 냉방물품 지원사업 등 다양한 공모사업에 선정되어 이용인의 삶의 질 향상을 위해 최선을 다하고 있습니다.</p>
+<p>특히 HD현대삼호의 따뜻한 후원으로 내부 시설 리모델링 사업을 추진하게 되어, 더 안전하고 문턱 없는 복지관으로 거듭나게 되었습니다. 후원해 주신 HD현대삼호 임직원 여러분께 진심으로 감사드립니다.</p>
+<p>앞으로도 영암군장애인종합복지관은 이용인 중심의 따뜻하고 전문적인 서비스를 제공하며, 지역사회와 함께 성장하는 복지관이 되도록 최선을 다하겠습니다.</p>
+<p style="text-align:right;font-weight:700;margin-top:20px">나누는 사랑, 커지는 행복, 함께하는 장애인복지<br>영암군장애인종합복지관 관장 김철진 배상</p>`},
+
+  {id:'s1',cat:'발자취',emoji:'🗓️',featured:false,date:'2026-07-01',author:'기획홍보팀',
+   title:'2026년 상반기 함께 걸어온 복지관 발자취',
+   summary:'찾아가는 시무식부터 장애인권교육아카데미까지 — 2026년 상반기 영암군장애인종합복지관의 주요 활동을 한눈에 돌아봅니다.',
+   content:`<p><strong>1월:</strong> 1/2 찾아가는 시무식</p>
+<p><strong>2월:</strong> 2월 계절학교 / 2/4 장애인체력인증검사 / 2/10~2/13 명절맞이 떡국 및 장어 특식 / 2/12 이용인 간담회</p>
+<p><strong>3월:</strong> 3/6 세계여성의날 행사 / 3/20 갈이가영 거리캠페인 / 3/20 보조기기서비스</p>
+<p><strong>4월:</strong> 4/3~4/7 왕인문화축제 / 4/8 재가장애인 나들이 / 4/10 너는나의봄이다 행사(영다락방, 샌드위치) / 4/17 체육대회 / 4/20 장애인의 날 행사 / 4/27 이침봉사&헌혈 / 4/28 청년포럼 공모사업 선정</p>
+<p><strong>5월:</strong> 5/8 어버이날 행사 / 5/8 온누리 열효율 개선사업 선정 / 5/18 영다락방 / 5/22 연탄배달</p>
+<p><strong>6월:</strong> 6/1 국가유공자 방문 / 6/2 사진공모전 / 6/5 저소득 장애인 암보험 지원사업 선정 / 6/9 장애성인 평생교육프로그램 / 6/10 에너지취약계층 냉방물품 지원사업 선정 / 6/10 약바르게 쓰기 교육 / 6/29~30 장애인인권교육아카데미</p>`},
+
+  {id:'s2',cat:'지역사회',emoji:'🏢',featured:false,date:'2026-01-02',author:'기획홍보팀',
+   title:'찾아가는 시무식 — 지역사회와 더욱 가까이',
+   summary:'2026년 희망찬 새해를 맞이하여 영암군 내 유관 기관과 이웃 상점, 지역 주민들을 직접 찾아뵙고 따뜻한 새해 덕담을 나누며 복지관의 다양한 활동을 안내했습니다.',
+   content:`<p>2026년 희망찬 새해를 맞이하여 지역 사회와 더욱 가까이 소통하기 위한 '찾아가는 시무식'을 진행했습니다. 영암군 내 유관 기관과 이웃 상점, 그리고 지역 주민분들을 직접 찾아뵙고 따뜻한 새해 덕담을 나누며 복지관의 다양한 활동을 안내해 드렸습니다.</p>
+<p>올 한 해도 지역 주민의 목소리에 귀 기울이며 먼저 다가가고 교류하는 영암군장애인종합복지관이 되겠습니다!</p>`},
+
+  {id:'s3',cat:'프로그램',emoji:'☀️',featured:false,date:'2026-02-13',author:'평생교육지원팀',
+   title:'함께여서 더 즐거운 겨울방학 — 계절학교',
+   summary:'장애학생들의 신나는 겨울방학을 위해 2월 2일부터 13일까지 계절학교를 운영했습니다. 보호자의 돌봄 부담은 줄이고, 학생들에게는 친구들과 어울리며 소통할 수 있는 소중한 시간을 선물했습니다.',
+   content:`<p>장애학생들의 신나는 겨울방학을 위해 2월 2일부터 13일까지 '계절학교'를 운영했어요! 보호자분들의 돌봄 부담은 한결 덜어드리고, 우리 학생들에게는 친구들과 어울리며 소통할 수 있는 소중한 시간을 선물했답니다.</p>
+<p>단순한 돌봄을 넘어서 현장 체험, 요리, 미술 등 다채로운 체험 프로그램으로 꽉꽉 채워 학생들이 더욱 활짝 웃으며 참여할 수 있었어요. 모든 활동을 다치지 않고 안전하게 마무리하며, 모두에게 즐겁고 보람찬 겨울방학 추억을 남겨주었습니다!</p>`},
+
+  {id:'s4',cat:'프로그램',emoji:'💪',featured:false,date:'2026-04-08',author:'맞춤기능향상팀',
+   title:'전남 장애인 체력인증검사 — 든든한 건강관리',
+   summary:'전라남도장애인체력인증센터와 함께 2월 4일과 4월 8일, 두 차례에 걸쳐 체력측정 서비스를 진행했습니다. 인바디 검사와 기초체력 측정을 통해 맞춤형 건강 상담과 운동 처방을 제공했습니다.',
+   content:`<p>우리 복지관 이용인분들의 든든한 건강 관리를 위해 전라남도장애인체력인증센터와 함께 2월 4일과 4월 8일, 두 차례에 걸쳐 체력측정 서비스를 진행했어요!</p>
+<p>인바디 검사와 기초체력 측정을 통해 근력, 유연성 등 내 몸의 상태를 꼼꼼히 확인해 보았답니다. 측정 결과를 바탕으로 꼭 맞는 맞춤형 건강 상담과 운동 처방까지 든든하게 챙겨드려, 앞으로 더욱 활기차고 건강한 일상을 보내실 수 있도록 힘껏 응원했습니다!</p>`},
+
+  {id:'s5',cat:'지역사회',emoji:'🍲',featured:false,date:'2026-02-13',author:'급식지원팀',
+   title:'명절맞이 특식 — 설맞이 사랑의 떡국 나눔',
+   summary:'민족 대명절 설을 맞이하여 2월 13일, 복지관 이용인 및 가족분들과 함께 따뜻한 설맞이 사랑의 떡국 나눔 행사를 가졌습니다.',
+   content:`<p>민족 대명절 설을 맞이하여 지난 2월 13일, 복지관 이용인 및 가족분들과 함께 따뜻한 '설맞이 사랑의 떡국' 나눔 행사를 가졌어요! 영암군 11개 읍·면 곳곳에 계신 모든 분이 한 분도 소외됨 없이 정겹고 훈훈한 명절을 보내시길 바라는 마음을 한가득 담았답니다.</p>
+<p>다 함께 둘러앉아 맛있는 떡국을 나누어 먹으며, 올 한 해의 건강과 안녕을 기원하는 정이 넘치고 뜻깊은 시간이었어요!</p>`},
+
+  {id:'s6',cat:'프로그램',emoji:'🗣️',featured:false,date:'2026-02-12',author:'상담사례지원팀',
+   title:'이용인 간담회 — 여러분의 소중한 목소리를 듣습니다',
+   summary:'이용인분들과 우리 직원들이 한자리에 모여 진솔한 의견을 나누고 서로를 깊이 이해할 수 있었던 참 뜻깊은 시간이었습니다.',
+   content:`<p>이번 간담회는 이용인분들과 우리 직원들이 한자리에 모여 진솔한 의견을 나누고, 서로를 깊이 이해할 수 있었던 참 뜻깊은 시간이었어요!</p>
+<p>특히 두근두근 기대되던 행운권 추첨 시간까지 더해져, 다 함께 활짝 웃으며 잊지 못할 즐거움을 듬뿍 나누었답니다.</p>
+<p>앞으로도 우리 복지관은 여러분이 들려주시는 소중한 목소리에 언제나 다정하게 귀 기울일게요. 모두가 환하게 웃고 만족하실 수 있는 따뜻한 영암군장애인종합복지관을 함께 만들어 가겠습니다!</p>`},
+
+  {id:'s7',cat:'지역사회',emoji:'🤝',featured:false,date:'2026-04-07',author:'지역사회연계팀',
+   title:'왕인문화축제 부스 운영 — 지역사회와 함께하는 복지관',
+   summary:'2026년 4월 영암의 대표 축제인 왕인문화축제를 맞아 지역 주민분들과 한층 더 가깝게 소통하기 위해 즐길 거리 가득한 체험 부스를 정성껏 준비했습니다.',
+   content:`<p>2026년 4월 영암의 대표 축제인 왕인문화축제를 맞아, 우리 복지관도 지역 주민분들과 한층 더 가깝게 소통하기 위해 즐길 거리 가득한 체험 부스를 정성껏 준비했어요!</p>
+<p>남녀노소 누구나 쉽게 즐길 수 있는 '슐런 체험' 코너에서는 나무 보드 위로 퍽을 미끄러뜨리며 다 함께 함박웃음을 짓고 신나게 응원하는 활찬 시간을 가졌답니다.</p>
+<p>'지문자 도장 체험'에서는 수어 지문자가 새겨진 도장으로 내 이름을 직접 쾅쾅 찍어보며, 자연스럽고 재미있게 장애에 대해 이해해 보는 의미 있는 시간을 나누었어요. 화창한 봄날 저희 부스를 찾아 즐겨주신 모든 분께 진심으로 감사드리며, 앞으로도 지역사회와 다정하게 어우러지는 영암군장애인종합복지관이 되겠습니다!</p>
+<p>발달장애인 자조모임 '별빛소원'에서는 4월 8일 화창한 봄날을 맞아 왕인문화축제에 다녀왔어요! 3월 정기회의에서 회원분들이 직접 참여를 결정해 다녀온 나들이라 그 의미가 더욱 남달랐습니다. 군서면 왕인박사유적지에서 지문 스탬프 체험과 신나는 룰렛 이벤트도 즐기고, 환경정화 활동까지 솔선수범하며 지역사회와 다정하게 소통하는 시간을 보냈어요. 따뜻한 봄 햇살 아래 다 함께 활짝 웃으며 잊지 못할 예쁜 추억을 한가득 만들고 돌아왔습니다!</p>`},
+
+  {id:'s8',cat:'프로그램',emoji:'🗳️',featured:false,date:'2026-04-20',author:'맞춤기능향상팀',
+   title:'자기결정프로그램 모의투표 — 스스로 선택하는 힘',
+   summary:'4월 20일 영암군선거관리위원회와 함께 모의투표 프로그램을 진행했습니다. 신분 확인부터 투표용지 수령, 기표, 투표함 투입까지 실제 선거와 똑같은 과정을 생생하게 체험해 보았습니다.',
+   content:`<p>우리 복지관에서는 이용인분들이 소중한 참정권에 대해 이해하고 스스로 선택하는 힘을 기를 수 있도록, 지난 4월 20일 영암군선거관리위원회와 함께 '모의투표' 프로그램을 진행했어요!</p>
+<p>다가오는 제9회 전국동시지방선거를 앞두고 신분 확인부터 투표용지 수령, 기표, 투표함 투입까지 실제 선거와 똑같은 과정을 생생하게 직접 체험해 보았답니다.</p>
+<p>이번 경험을 통해 스스로 결정하고 당당하게 권리를 행사하는 기쁨을 느끼셨기를 바라며, 앞으로도 이용인분들의 활발한 사회 참여를 곁에서 든든하게 지원하겠습니다!</p>`},
+
+  {id:'s9',cat:'지역사회',emoji:'🩸',featured:false,date:'2026-04-27',author:'지역사회연계팀',
+   title:'이침봉사 & 헌혈 — 세한대학교와 함께하는 나눔',
+   summary:'세한대학교 이침봉사단과 함께 복지관 이용인분들을 직접 모시고 건강과 따뜻한 온기를 나누는 참 뜻깊은 시간을 보냈습니다. 더불어 생명을 살리는 헌혈 활동도 함께 실천했습니다.',
+   content:`<p>이번에는 세한대학교 이침봉사단과 함께 우리 복지관 이용인분들을 직접 모시고 건강과 따뜻한 온기를 나누는 참 뜻깊은 시간을 보냈어요!</p>
+<p>더불어 생명을 살리는 가장 직접적이고 소중한 나눔인 헌혈 활동까지 실천하며, 장애인과 비장애인이 다 같이 어우러지는 건강하고 따뜻한 공동체를 만들어가는 좋은 계기가 되었답니다.</p>
+<p>앞으로도 다정하게 손잡고 나눔을 실천하는 영암군장애인종합복지관이 되겠습니다!</p>`},
+
+  {id:'s10',cat:'프로그램',emoji:'👴',featured:false,date:'2026-05-08',author:'평생교육지원팀',
+   title:'어버이날 행사 — 사랑해孝 감사해孝',
+   summary:'지난 5월 8일 어버이날을 맞아, 복지관 밀알홀에서 지역 내 70세 이상 어르신들을 모시고 기념행사를 열었습니다. 문화공연, 카네이션 전달, 시 낭송까지 감동이 넘쳤습니다.',
+   content:`<p>지난 5월 8일 어버이날을 맞아, 우리 복지관 밀알홀에서 지역 내 70세 이상 어르신들을 모시고 '사랑해孝 감사해孝' 기념행사를 열었어요!</p>
+<p>신명 나는 풍물팀과 난타팀의 식전 공연을 시작으로, 금정어린이집, 아이조아어린이집, 삼호어린이집의 귀여운 천사들이 직접 카네이션을 달아드리고 멋진 공연까지 선보여 어르신들의 얼굴에 웃음꽃이 활짝 피었답니다.</p>
+<p>이어서 이사장님께서 뜻깊은 발걸음으로 방문해 다정한 인사말을 전해주셨고, 우리 이용인분의 감동적인 시 낭송과 직원이 진심을 꾹꾹 눌러 담아 읽어 내려간 편지 낭송이 이어져 장내를 뭉클하게 만들었어요.</p>
+<p>마지막으로 복지관 '달뜬싱어즈'와 우리 직원들이 다 함께 무대에 올라 감사의 노래를 부르며 훈훈하게 행사를 마무리했답니다. 어르신들께 깊은 존경을 전하며, 잊지 못할 따뜻한 감동을 듬뿍 나눈 참 행복한 시간이었습니다!</p>`},
+
+  {id:'s11',cat:'나들이',emoji:'🚌',featured:false,date:'2026-05-18',author:'상담사례지원팀',
+   title:'발달장애인 자조모임 목포 나들이 — 별빛소원',
+   summary:'따뜻한 5월을 맞아 발달장애인 자조모임 별빛소원 회원분들이 직접 계획하고 목적지를 골라 목포로 신나는 나들이를 다녀왔습니다.',
+   content:`<p>따뜻한 5월을 맞아, 우리 발달장애인 자조모임 '별빛소원' 회원분들이 직접 계획하고 목적지를 골라 목포로 신나는 나들이를 다녀왔어요!</p>
+<p>화창한 날씨 속에서 목포해상케이블카를 타고 탁 트인 다도해와 아름다운 시내 풍경을 한눈에 담으며 가슴 뻥 뚫리는 특별한 시간을 보냈답니다. 이어서 아찔한 목포 스카이워크를 걸으며 마치 하늘 위를 산책하는 듯한 색다른 즐거움도 만끽했어요.</p>
+<p>스스로 정한 여행이라 더욱 뜻깊었고, 다 함께 활짝 웃으며 잊지 못할 예쁜 봄날의 추억을 한가득 안고 돌아왔습니다!</p>`},
+
+  {id:'s12',cat:'지역사회',emoji:'🌿',featured:false,date:'2026-05-22',author:'지역사회연계팀',
+   title:'갈이 가영 장애인자원봉사단 — 영암 곳곳에 따뜻한 손길',
+   summary:"우리 복지관의 자랑, '갈이 가영' 장애인자원봉사단이 영암 곳곳에 따뜻한 손길을 전하고 있습니다. 매월 정기적으로 영암 관내 장터와 거리를 돌며 환경을 가꾸고 지역 주민분들과 소통합니다.",
+   content:`<p>우리 복지관의 자랑, '갈이 가영' 장애인자원봉사단이 영암 곳곳에 따뜻한 손길을 전하고 있어요! 매월 정기적으로 영암 관내 장터와 거리를 돌며 깨끗하게 환경을 가꾸고, 지역 주민분들과 다정하게 소통하며 장애인 인식개선 캠페인도 활기차게 진행하고 있답니다.</p>
+<p>나눔의 온기가 필요한 이웃들에게 직접 찾아가 따뜻한 마음을 전하며 구슬땀을 흘리는 우리 봉사단, 앞으로도 지역사회와 함께 발맞춰 걸어가는 멋진 활약을 듬뿍 응원해 주세요!</p>`},
+
+  {id:'s13',cat:'프로그램',emoji:'📸',featured:false,date:'2026-06-02',author:'기획홍보팀',
+   title:'사진공모전 — 영암군 장애인 우리 가족 사진전',
+   summary:'5월 가정의 달을 기념하여 정성껏 준비한 영암군 장애인 우리 가족 사진 공모전 시상식이 따뜻한 분위기 속에서 열렸습니다.',
+   content:`<p>지난 6월 2일, 5월 가정의 달을 기념하여 정성껏 준비한 '영암군 장애인 우리 가족 사진 공모전' 시상식이 따뜻한 분위기 속에서 열렸어요!</p>
+<p>이번 공모전은 가족과 함께하는 행복한 일상을 나누고, 서로를 향한 사랑과 화합을 널리 알리기 위해 마련되었답니다. 사랑이 듬뿍 담긴 다정한 순간과 희망찬 메시지를 담은 멋진 사진들이 한가득 출품되어, 보는 내내 끈끈한 가족의 정을 깊이 느낄 수 있었어요.</p>
+<p>앞으로도 우리 복지관은 가족분들의 예쁜 미소가 매일매일 피어날 수 있도록 언제나 곁에서 든든하게 응원할게요!</p>`},
+
+  {id:'s14',cat:'프로그램',emoji:'💊',featured:false,date:'2026-06-10',author:'맞춤기능향상팀',
+   title:'약바르게 쓰기 교육 — 건강관리교육 실시',
+   summary:'6월 10일 복지관 이용인분들이 더욱 건강하고 활기찬 일상을 보내실 수 있도록 유익한 건강관리교육을 진행했습니다.',
+   content:`<p>지난 6월 10일, 우리 복지관 이용인분들이 더욱 건강하고 활기찬 일상을 보내실 수 있도록 유익한 건강관리교육을 진행했어요!</p>
+<p>스스로 내 몸 상태를 꼼꼼히 점검하고 올바른 건강 습관을 기를 수 있도록, 재미있고 이해하기 쉬운 다양한 사례들을 곁들여 유익한 시간을 가졌답니다.</p>
+<p>이번 교육을 통해 건강 수명도 쑥쑥 늘리고 삶의 질도 한층 더 높이시기를 바라며, 앞으로도 이용인분들의 튼튼하고 행복한 매일을 위해 세심하게 돕겠습니다!</p>`},
+
+  {id:'s15',cat:'지역사회',emoji:'🌍',featured:false,date:'2026-03-06',author:'지역사회연계팀',
+   title:'지역사회공헌활동 — 세계여성의날, 바리스타 강사지원, 국가유공자 방문',
+   summary:'올 상반기에는 지역사회를 위한 다양하고 따뜻한 공헌활동을 펼쳤습니다. 장애인 일자리 창출을 위한 바리스타 강사 지원부터 세계여성의날 기념행사, 국가유공자 어르신 감사 가정방문까지.',
+   content:`<p>올 상반기에는 지역사회를 위한 다양하고 따뜻한 공헌활동을 가득 펼쳤어요!</p>
+<p><strong>지역 카페 바리스타 강사 지원:</strong> 장애인 일자리 창출과 자립을 돕기 위한 지역 카페 바리스타 강사 지원부터,</p>
+<p><strong>세계여성의날 기념행사(3/6):</strong> 평등한 문화를 함께 나누는 세계 여성의 날 기념행사,</p>
+<p><strong>국가유공자 이용 어르신 감사 가정방문(6/2):</strong> 현충일을 맞아 국가유공자 어르신 댁을 직접 찾아뵙는 감사 가정방문까지 참 뜻깊은 시간들을 보냈답니다.</p>
+<p>앞으로도 지역사회 곳곳에 다정한 손길을 전하며 이웃과 함께 걷는 영암군장애인종합복지관이 되겠습니다!</p>`},
+
+  {id:'s16',cat:'공모사업',emoji:'🏆',featured:false,date:'2026-04-28',author:'기획홍보팀',
+   title:'2026 청년포럼 청년주도 개선활동 지원사업 선정',
+   summary:'영암군장애인종합복지관이 한국장애인재활협회가 주관하는 2026 청년포럼 청년주도 개선활동 사업 공모에 선정되어 열린관광지 영암군 주요 관광지 장애인 접근성 실태조사 및 개선방안 도출 사업을 추진합니다.',
+   content:`<p>영암군장애인종합복지관(관장 김철진)은 한국장애인재활협회가 주관하는 「2026 청년포럼 청년주도 개선활동 사업」 공모에 선정되어 '열린관광지, 영암군 주요 관광지 장애인 접근성 실태조사 및 개선방안 도출'을 주제로 사업을 추진한다.</p>
+<p>이번 사업은 전라남도 영암군 주요 관광지를 대상으로 휠체어 이용자의 관점에서 이동 동선, 경사도, 안내체계, 편의시설 등을 직접 조사하여 장애인의 관광 접근성을 점검하고 개선이 필요한 사항을 발굴하기 위해 마련됐다.</p>
+<p>김철진 관장은 "이번 사업을 통해 장애인의 이동권과 관광 접근성 향상을 위한 실질적인 개선 방안을 마련하고, 누구나 편리하게 관광을 즐길 수 있는 환경 조성을 위해 최선을 다하겠다"고 말했다.</p>`},
+
+  {id:'s17',cat:'공모사업',emoji:'🔥',featured:false,date:'2026-05-08',author:'기획홍보팀',
+   title:'2026년도 온 누리 열효율 개선사업 선정',
+   summary:'영암군장애인종합복지관이 2026년 온누리 열효율 개선사업 공모에 선정되어 복지관의 노후화된 보일러와 창호를 교체하는 열효율 개선 공사를 지원받게 되었습니다.',
+   content:`<p>영암군장애인종합복지관(관장 김철진)은 대구광역시사회복지협의회가 추진한 「2026년 온누리 열효율 개선사업」 공모에 선정되어 복지관의 에너지 효율 개선 공사를 추진한다.</p>
+<p>이번 사업은 에너지 취약계층 및 사회복지시설의 에너지 사용 환경을 개선하기 위한 사업으로, 복지관은 노후화된 보일러와 창호를 교체하는 열효율 개선 공사를 지원받는다.</p>
+<p>기존 보일러는 노후화와 잦은 고장으로 운영에 어려움이 있었으며, 창호 역시 단열 성능이 저하되어 냉·난방 효율이 떨어지고 에너지 비용 부담이 지속되어 왔다. 이번 공사를 통해 난방 효율을 높이고 이용인들에게 더욱 쾌적하고 안전한 복지서비스 환경을 제공할 것으로 기대된다.</p>`},
+
+  {id:'s18',cat:'공모사업',emoji:'🏥',featured:false,date:'2026-06-05',author:'기획홍보팀',
+   title:'2026년도 저소득 장애인 우체국 암보험 지원사업 선정',
+   summary:'영암군장애인종합복지관이 우체국공익재단이 추진하는 2026년 저소득 장애인 우체국 암보험 지원사업에 선정되어 지역 내 국민기초생활수급자인 심한 지적장애인 2명의 암보험 가입을 지원했습니다.',
+   content:`<p>영암군장애인종합복지관(관장 김철진)은 우체국공익재단이 추진하는 「2026년 저소득 장애인 우체국 암보험 지원사업」에 선정되어 지역 내 국민기초생활수급자인 심한 지적장애인 2명의 암보험 가입을 지원했다.</p>
+<p>이번 사업은 경제적 어려움으로 보험 가입이 어려운 저소득 장애인의 의료비 부담을 완화하고 건강한 생활을 지원하기 위해 마련됐다.</p>
+<p>영암군장애인종합복지관 관계자는 "앞으로도 다양한 공모사업과 지역사회 자원을 연계하여 장애인의 건강권 보장과 복지 향상을 위해 지속적으로 노력하겠다"고 말했다.</p>`},
+
+  {id:'s19',cat:'공모사업',emoji:'🎓',featured:false,date:'2026-06-09',author:'평생교육지원팀',
+   title:'2026년도 장애성인 평생교육프로그램 — 국립목포대학교 협력',
+   summary:'영암군장애인종합복지관이 국립목포대학교 평생교육원과 협력하여 지역 내 등록 장애인을 대상으로 2026 장애인 맞춤형 평생교육 프로그램을 운영합니다.',
+   content:`<p>영암군장애인종합복지관(관장 김철진)은 국립목포대학교 평생교육원과 협력하여 지역 내 등록 장애인을 대상으로 「2026 장애인 맞춤형 평생교육 프로그램」을 운영한다.</p>
+<p>이번 프로그램은 장애인의 자기계발과 직업능력 향상, 심리·정서적 치유를 통한 삶의 질 향상을 목적으로 마련됐으며, 7월부터 12월까지 '힐링 베이커리'와 '퍼스널컬러 이미지메이크업' 과정을 운영한다.</p>
+<p>참여자들은 실습 중심의 교육을 통해 제과·제빵 기술과 이미지메이킹 역량을 익히고, 자신감 향상과 사회참여 기회를 확대할 수 있을 것으로 기대된다.</p>`},
+
+  {id:'s20',cat:'공모사업',emoji:'❄️',featured:false,date:'2026-06-10',author:'기획홍보팀',
+   title:'2026년도 에너지취약계층 냉방물품 지원사업 선정',
+   summary:'영암군장애인종합복지관이 월드휴먼브리지가 추진한 2026 에너지 취약계층 냉방물품 지원사업에 선정되어 지역 내 에너지 취약계층 2가구에 선풍기를 지원했습니다.',
+   content:`<p>영암군장애인종합복지관(관장 김철진)은 월드휴먼브리지가 추진한 「2026 에너지 취약계층 냉방물품 지원사업」에 선정되어 지역 내 에너지 취약계층 2가구에 선풍기를 지원했다.</p>
+<p>이번 사업은 냉방기기가 없거나 고장으로 인해 폭염에 취약한 에너지 취약계층의 건강한 여름나기를 지원하기 위해 마련됐다.</p>
+<p>김철진 관장은 "이번 지원이 폭염으로 어려움을 겪는 취약계층의 건강과 안전을 지키는 데 도움이 되길 바란다"며 "앞으로도 다양한 민간자원과 연계하여 복지 사각지대에 놓인 이웃을 위한 맞춤형 지원을 지속적으로 추진하겠다"고 말했다.</p>`},
+
+  {id:'s21',cat:'후원봉사',emoji:'🚢',featured:false,date:'2026-07-01',author:'기획홍보팀',
+   title:'"더 안전하고 문턱 없는 복지관으로" — HD현대삼호 후원으로 내부 리모델링 시동',
+   summary:'HD현대삼호에서 우리 복지관 이용인들을 위해 리모델링 사업비를 흔쾌히 후원해 주셨습니다. 장애인 이용인들이 마주했던 물리적 장벽을 허물고 누구나 차별 없이 시설을 이용할 수 있도록 돕는 무장애 환경 조성의 밑거름이 되었습니다.',
+   content:`<p>항상 복지관의 발전과 장애인 복지 증진을 위해 아낌없는 성원을 보내주시는 후원자 및 지역 주민 여러분께 깊은 감사를 드립니다.</p>
+<p>지역사회의 상생과 사회공헌에 앞장서 온 HD현대삼호에서 우리 복지관 이용인들을 위해 리모델링 사업비를 흔쾌히 후원해 주셨습니다. 이번 후원은 단순한 재정적 지원을 넘어, 장애인 이용인들이 마주했던 물리적 장벽을 허물고 누구나 차별 없이 시설을 이용할 수 있도록 돕는 실질적인 무장애(Barrier-Free) 환경 조성의 밑거름이 되었다는 점에서 더욱 큰 의의를 가집니다.</p>
+<p>어려운 시기임에도 불구하고 장애인 복지 환경 개선을 위해 통 큰 결단을 내려주신 HD현대삼호 임직원 여러분께 복지관 직원과 이용인, 그리고 모든 보호자를 대변하여 고개 숙여 진심으로 감사 인사를 전합니다. HD현대삼호의 고귀한 사회공헌 정신과 따뜻한 나눔 덕분에, 우리 복지관은 모두가 안전하게 이용하는 화장실, 그리고 한층 밝고 아늑해진 교육 공간을 마주할 수 있게 되었습니다.</p>
+<p>연제나 보이지 않는 곳에서 묵묵히 나눔의 가치를 실천해 주시는 후원사 분들이 계시기에 우리 복지관의 내일은 언제나 희망찹니다. 후원자분들과 지역 주민 여러분께서도 새로워질 복지관의 모습을 기대감으로 함께 지켜봐 주시고 응원해 주시기 바랍니다. 감사합니다.</p>`},
+
+  {id:'s22',cat:'지역사회',emoji:'🤝',featured:false,date:'2026-06-22',author:'지역사회연계팀',
+   title:'영암군장애인종합복지관 네트워크 현황 — 상반기 업무협약',
+   summary:'2026년 상반기 사회적협동조합 오라차차, 목포과학대학교, 국립목포해양대학교, 사회고용정책개발원, 마음더하기 심리상담치유센터, 영암교통문화총연합회, 장애인체육회 등 7개 기관과 업무협약을 체결했습니다.',
+   content:`<p>2026년 상반기, 영암군장애인종합복지관은 지역사회 네트워크 강화를 위해 다양한 기관과 업무협약(MOU)을 체결했습니다.</p>
+<p><strong>3/20</strong> 사회적협동조합 오라차차<br>
+<strong>4/3</strong> 목포과학대학교<br>
+<strong>4/29</strong> 국립목포해양대학교<br>
+<strong>5/12</strong> 사회고용정책개발원<br>
+<strong>6/10</strong> 마음더하기 심리상담치유센터<br>
+<strong>6/18</strong> 영암교통문화총연합회<br>
+<strong>6/22</strong> 장애인체육회</p>
+<p>이번 협약을 통해 장애인 취업 지원, 교육 협력, 심리상담, 지역사회 연계 서비스 등 다양한 분야에서 협력 체계를 구축하게 되었습니다.</p>`},
+
+  {id:'s23',cat:'프로그램',emoji:'🎓',featured:false,date:'2026-06-30',author:'인권교육팀',
+   title:'장애인인권교육아카데미 — 나의 권리, 당당하게',
+   summary:'6월 29~30일 이용인분들이 소중한 권리에 대해 깊이 이해하고 스스로 선택하는 힘을 기를 수 있도록 장애인인권교육아카데미를 진행했습니다.',
+   content:`<p>우리 복지관에서는 이용인분들이 소중한 권리에 대해 깊이 이해하고 스스로 선택하는 힘을 기를 수 있도록, 지난 6월 29~30일 장애인인권교육아카데미를 진행했어요!</p>
+<p>다가오는 제9회 전국동시지방선거를 앞두고 신분 확인부터 기표, 투표함 투입까지 실제 선거와 똑같은 과정을 생생하게 체험해 보았답니다.</p>
+<p>이번 경험을 통해 스스로 결정하고 당당하게 권리를 행사하는 기쁨을 느끼셨기를 바라며, 앞으로도 이용인분들의 활발한 사회 참여를 곁에서 든든하게 지원하겠습니다!</p>`}
+];
+
+/* ── 상태 ── */
+let ARTS=[], curTag='all', q='', visible=9;
+let ttsPlay=false, ttsUtt=null;
+
+/* ── 카테고리 스타일 ── */
+/* 프로그램·나들이·지역사회 → '함께한 이야기'로 통합 표시 */
+const MERGED_CATS=['프로그램','나들이','지역사회'];
+function dispCat(c){ return MERGED_CATS.includes(c) ? '함께한 이야기' : (c||''); }
+/* 웹진에 노출하지 않을 카테고리 */
+function cleanArts(arr){ return (arr||[]).filter(a => a.cat !== '관장인사말'); }
+
+const CBGMAP={
+  발자취:'#ede9f6','함께한 이야기':'#d8f3dc',프로그램:'#d8f3dc',
+  나들이:'#d8f3dc',지역사회:'#d8f3dc',공모사업:'#e0f0f8',후원봉사:'#fff3e0',소식:'#f0f0f0'
+};
+const CCMAP={
+  발자취:'#6b4fa0','함께한 이야기':'#2d6a4f',프로그램:'#2d6a4f',
+  나들이:'#2d6a4f',지역사회:'#2d6a4f',공모사업:'#0a5280',후원봉사:'#b36000',소식:'#555'
+};
+
+/* ── 초기화 ── */
+window.addEventListener('load', () => {
+  // 즉시 샘플 데이터로 표시 (Firebase는 백그라운드에서 로드 시도)
+  ARTS = cleanArts(SAMPLE);
+  document.getElementById('offlineNote').style.display = 'block';
+  document.getElementById('progBar').classList.remove('show');
+  document.getElementById('loadingBox').style.display = 'none';
+  document.getElementById('featArea').style.display = '';
+  document.getElementById('listArea').style.display = '';
+  render();
+  applySettings();
+
+  // 백그라운드에서 Firebase 로드 시도 (성공하면 자동 교체)
+  if(window.__loadArts) {
+    const tout = new Promise(res => setTimeout(() => res(null), 5000));
+    Promise.race([window.__loadArts(), tout]).then(arts => {
+      arts = cleanArts(arts);
+      if(arts && arts.length) {
+        ARTS = arts;
+        document.getElementById('offlineNote').style.display = 'none';
+        render();
+        console.log('Firebase 기사 로드 완료:', arts.length+'건');
+      }
+    }).catch(() => {});
+  }
+
+  // 페이지 포커스 시 Firebase 재로드 (다른 탭에서 수정/삭제 반영)
+  window.addEventListener('focus', () => {
+    if(window.__loadArts) {
+      window.__loadArts().then(arts => {
+        arts = cleanArts(arts);
+        if(arts && arts.length) {
+          ARTS = arts;
+          document.getElementById('offlineNote').style.display = 'none';
+          render();
+        }
+      }).catch(()=>{});
+    }
+  });
+});
+
+/* ── 렌더 ── */
+function filtered() {
+  return ARTS.filter(a => {
+    const dc = dispCat(a.cat);
+    const mt = curTag==='all' || a.cat===curTag || dc===curTag;
+    const body = (a.content||'').replace(/<[^>]*>/g,'');
+    const mq = !q || (a.title||'').includes(q) || (a.summary||'').includes(q)
+             || dc.includes(q) || body.includes(q);
+    return mt && mq;
+  });
+}
+
+function thumbOf(a){
+  const m = /<img[^>]+src="([^"]+)"/.exec(a.content||'');
+  return m ? m[1] : null;
+}
+
+/* 세로 사진(높이>너비)은 잘리지 않도록 원본 비율로 표시 */
+function fitThumb(im){
+  if(im.naturalHeight > im.naturalWidth) im.classList.add('fit-contain');
+}
+
+function render() {
+  const list = filtered();
+  const showFeat = curTag==='all' && !q;
+  const featArt  = ARTS.find(a => a.featured) || ARTS[0];
+
+  // 특집
+  const fa = document.getElementById('featArea');
+  if(showFeat && featArt) {
+    fa.style.display = '';
+    const fc = document.getElementById('featCard');
+    const cbg = CBGMAP[featArt.cat] || '#d8f3dc';
+    const cc  = CCMAP[featArt.cat]  || '#2d6a4f';
+    const ft = thumbOf(featArt);
+    fc.classList.toggle('no-img', !ft);
+    fc.innerHTML = `
+      ${ft ? `<div class="feat-img" style="background:linear-gradient(135deg,${cbg},${cbg}88)">
+        <img class="feat-photo" src="${ft}" alt="" loading="lazy" onload="fitThumb(this)">
+      </div>` : ``}
+      <div class="feat-body">
+        <div class="feat-cat" style="background:${cbg};color:${cc};border-color:${cbg}">${dispCat(featArt.cat)}</div>
+        <h2>${featArt.title}</h2>
+        <p>${featArt.summary}</p>
+        <div class="feat-meta">
+          <span>📅 ${fmt(featArt.date)}</span>
+          <span>✍️ ${featArt.author||''}</span>
+        </div>
+        <button class="btn-read" onclick="event.stopPropagation();openModal('${featArt.id}')">
+          자세히 읽기
+          <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+        </button>
+      </div>`;
+    fc.onclick = () => openModal(featArt.id);
+    fc.onkeydown = e => { if(e.key==='Enter') openModal(featArt.id); };
+  } else {
+    fa.style.display = 'none';
+  }
+
+  // 목록
+  document.getElementById('cntNum').textContent = list.length;
+  const grid  = document.getElementById('artGrid');
+  const empty = document.getElementById('emptyBox');
+  const lmBox = document.getElementById('lmBox');
+
+  if(!list.length) {
+    grid.innerHTML = ''; grid.style.display='none';
+    empty.style.display='block'; lmBox.style.display='none'; return;
+  }
+  grid.style.display='grid'; empty.style.display='none';
+  const slice = list.slice(0, visible);
+
+  grid.innerHTML = slice.map(a => {
+    const cbg = CBGMAP[a.cat] || '#f0f0f0';
+    const cc  = CCMAP[a.cat]  || '#555';
+    return `<div class="card" role="listitem" tabindex="0"
+      onclick="openModal('${a.id}')" onkeydown="if(event.key==='Enter')openModal('${a.id}')"
+      aria-label="${dispCat(a.cat)}: ${a.title}">
+      ${thumbOf(a) ? `<div class="card-img" style="background:linear-gradient(135deg,${cbg},${cbg}66)">
+        <img class="card-photo" src="${thumbOf(a)}" alt="" loading="lazy" onload="fitThumb(this)">
+        <span class="card-badge" style="color:${cc};border-color:${cbg}">${dispCat(a.cat)}</span>
+      </div>` : `<div class="card-noimg">
+        <span class="card-badge-inline" style="color:${cc}">${dispCat(a.cat)}</span>
+      </div>`}
+      <div class="card-body">
+        <h3>${a.title}</h3>
+        <p>${a.summary}</p>
+        <div class="card-ft">
+          <span>📅 ${fmt(a.date)}</span>
+          <span>✍️ ${a.author||''}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  lmBox.style.display = list.length > visible ? 'block' : 'none';
+}
+
+function loadMore() { visible += 6; render(); }
+
+/* ── 필터 ── */
+function setTag(tag, btn) {
+  curTag = tag; visible = 9;
+  document.querySelectorAll('.ftag').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on'); render();
+}
+function onSearch() {
+  q = document.getElementById('srch').value.trim(); visible = 9;
+  document.getElementById('clrBtn').style.display = q ? 'inline-block' : 'none';
+  render();
+}
+function clearSearch() {
+  q = ''; document.getElementById('srch').value = '';
+  document.getElementById('clrBtn').style.display = 'none';
+  visible = 9; render();
+}
+
+/* ── 모달 + 사진 캐러셀 ── */
+let carImgs = [], carIdx = 0, carTitle = '';
+
+function openModal(id) {
+  const a = ARTS.find(x => x.id == id || x.id === id); if(!a) return;
+  document.getElementById('mCat').textContent = dispCat(a.cat);
+  document.getElementById('mDate').textContent = '발행일: ' + fmt(a.date);
+  document.getElementById('mTitle').textContent = a.title;
+  document.getElementById('mAuthor').textContent = a.author ? ('작성: ' + a.author) : '';
+  carTitle = a.title || '';
+
+  // 본문에서 사진을 분리하여 캐러셀로, 나머지는 텍스트로
+  const tmp = document.createElement('div');
+  tmp.innerHTML = a.content || `<p>${a.summary||''}</p>`;
+  carImgs = [...tmp.querySelectorAll('img')].map(im => im.getAttribute('src')).filter(Boolean);
+  tmp.querySelectorAll('img').forEach(im => im.remove());
+  document.getElementById('mContent').innerHTML = tmp.innerHTML;
+
+  buildCarousel();
+  document.getElementById('movOv').classList.add('open');
+  document.getElementById('movOv').scrollTop = 0;
+  document.body.style.overflow = 'hidden'; stopTTS();
+}
+
+function buildCarousel() {
+  const box = document.getElementById('carBox');
+  if(!carImgs.length){ box.style.display='none'; return; }
+  carIdx = 0;
+  box.style.display = '';
+  // 사진이 1장이면 화살표·점 숨김
+  const one = carImgs.length === 1;
+  box.querySelector('.car-btn.prev').style.display = one ? 'none' : '';
+  box.querySelector('.car-btn.next').style.display = one ? 'none' : '';
+  document.getElementById('carDots').innerHTML = one ? '' :
+    carImgs.map((_,i)=>`<button onclick="carGo(${i})" aria-label="${i+1}번째 사진"></button>`).join('');
+  showCar();
+  // 다음 사진 미리 불러오기
+  carImgs.slice(1,3).forEach(s => { const im = new Image(); im.src = s; });
+}
+function showCar() {
+  const img = document.getElementById('carImg');
+  img.src = carImgs[carIdx];
+  img.alt = carTitle + ' 사진 ' + (carIdx+1) + ' / ' + carImgs.length;
+  document.getElementById('carCnt').textContent = (carIdx+1) + ' / ' + carImgs.length;
+  [...document.getElementById('carDots').children].forEach((d,i)=>d.classList.toggle('on', i===carIdx));
+}
+function carMove(dir) {
+  if(!carImgs.length) return;
+  carIdx = (carIdx + dir + carImgs.length) % carImgs.length;
+  showCar();
+}
+function carGo(i){ carIdx = i; showCar(); }
+
+// 모바일 스와이프로 사진 넘기기
+(function(){
+  let sx = 0;
+  document.addEventListener('touchstart', e => {
+    if(e.target.closest('#carBox')) sx = e.touches[0].clientX;
+  }, {passive:true});
+  document.addEventListener('touchend', e => {
+    if(!e.target.closest('#carBox') || !sx) return;
+    const dx = e.changedTouches[0].clientX - sx; sx = 0;
+    if(Math.abs(dx) > 40) carMove(dx < 0 ? 1 : -1);
+  }, {passive:true});
+})();
+
+function closeModal() {
+  document.getElementById('movOv').classList.remove('open');
+  document.body.style.overflow = ''; stopTTS();
+}
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') closeModal();
+  // 모달이 열려 있을 때 좌우 방향키로 사진 이동
+  if(document.getElementById('movOv').classList.contains('open')) {
+    if(e.key==='ArrowLeft') carMove(-1);
+    if(e.key==='ArrowRight') carMove(1);
+  }
+});
+
+/* ── TTS 음성 리더 (재생/일시정지/정지) ── */
+let ttsPaused=false;
+function setTtsState(t){ const e=document.getElementById('ttsState'); if(e)e.textContent=t; }
+
+function ttsPlayPause() {
+  if(!window.speechSynthesis){alert('이 브라우저는 음성 읽기를 지원하지 않습니다.');return}
+  if(ttsPlay && ttsPaused){ speechSynthesis.resume(); ttsPaused=false; setTtsState('재생 중...'); return; }
+  if(ttsPlay) return; // 이미 재생 중
+  const text = document.getElementById('mTitle').textContent + '. '
+             + document.getElementById('mContent').innerText;
+  const chunks = splitText(text, 200);
+  speakChunks(chunks, 0);
+}
+function ttsPause() {
+  if(!ttsPlay || ttsPaused) return;
+  speechSynthesis.pause(); ttsPaused=true; setTtsState('일시정지됨');
+}
+function splitText(t, n) {
+  const s = t.match(/[^.!?。]+[.!?。]?/g)||[t];
+  const r=[]; let c='';
+  s.forEach(x=>{if((c+x).length>n&&c){r.push(c.trim());c=x}else c+=x});
+  if(c.trim())r.push(c.trim()); return r;
+}
+function speakChunks(chunks, i) {
+  if(i>=chunks.length){stopTTS();return}
+  ttsUtt=new SpeechSynthesisUtterance(chunks[i]);
+  ttsUtt.lang='ko-KR'; ttsUtt.rate=0.9;
+  const v=speechSynthesis.getVoices().find(v=>v.lang.startsWith('ko'));
+  if(v)ttsUtt.voice=v;
+  ttsUtt.onend=()=>speakChunks(chunks,i+1);
+  ttsUtt.onerror=()=>stopTTS();
+  speechSynthesis.speak(ttsUtt); ttsPlay=true; ttsPaused=false;
+  setTtsState('재생 중...');
+}
+function stopTTS() {
+  if(window.speechSynthesis)speechSynthesis.cancel();
+  ttsPlay=false; ttsPaused=false;
+  setTtsState('음성 읽어주기 준비 완료');
+}
+if(window.speechSynthesis)speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices();
+
+/* ── 접근성 ── */
+function toggleA11y(){document.getElementById('a11y').classList.toggle('open')}
+function setFz(s){
+  document.documentElement.classList.remove('fz-l','fz-x');
+  if(s==='l')document.documentElement.classList.add('fz-l');
+  if(s==='x')document.documentElement.classList.add('fz-x');
+  ['fzN','fzL','fzX'].forEach((id,i)=>document.getElementById(id).classList.toggle('on',['n','l','x'][i]===s));
+  localStorage.setItem('wc_fz',s);
+}
+function setHi(on){
+  document.body.classList.toggle('hi',on);
+  document.getElementById('hiN').classList.toggle('on',!on);
+  document.getElementById('hiC').classList.toggle('on',on);
+  localStorage.setItem('wc_hi',on?'1':'0');
+}
+
+/* ── 모바일 ── */
+function openMob(){document.getElementById('mobOv').classList.add('open');document.body.style.overflow='hidden'}
+function closeMob(){document.getElementById('mobOv').classList.remove('open');document.body.style.overflow=''}
+
+/* ── admin 설정 반영 ── */
+function applySettings(){
+  try{
+    const s=JSON.parse(localStorage.getItem('wc_set')||'{}');
+    // 소식지 제목
+    if(s.title){
+      ['siteTitle','ftTitle'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=s.title;});
+    }
+    // 호수 전체 문구 (그대로 표시)
+    if(s.vol){
+      const e=document.getElementById('volTag');
+      if(e)e.textContent=s.vol;
+      const mv=document.getElementById('mVol');
+      if(mv)mv.textContent=s.vol;
+    }
+    // 히어로 메인 제목
+    if(s.heroMain){
+      const e=document.getElementById('heroH1');
+      if(e)e.innerHTML=s.heroMain;
+    }
+    // 히어로 강조 텍스트 (초록색 부분)
+    if(s.heroAccent){
+      const e=document.getElementById('heroAccent');
+      if(e)e.textContent=s.heroAccent;
+    }
+    // 히어로 부제목
+    if(s.heroDesc){
+      const e=document.getElementById('heroDesc');
+      if(e)e.innerHTML=s.heroDesc;
+    }
+    // 후원 계좌
+    if(s.acc1){const e=document.getElementById('ftAcc1');if(e)e.textContent='비지정후원 · '+s.acc1;}
+    if(s.acc2){const e=document.getElementById('ftAcc2');if(e)e.textContent='지정후원 · '+s.acc2;}
+    // 주소/전화 상단바
+    if(s.addr){const e=document.querySelector('.topbar span');if(e)e.innerHTML='📍 '+s.addr;}
+    if(s.tel){const spans=document.querySelectorAll('.topbar span');if(spans[1])spans[1].innerHTML='📞 '+s.tel;}
+  }catch(e){}
+}
+
+/* ── 유틸 ── */
+function fmt(d){return(d||'').replace(/-/g,'.')}
+
+/* ── 설정 복원 ── */
+(function(){
+  const fz=localStorage.getItem('wc_fz');
+  const hi=localStorage.getItem('wc_hi')==='1';
+  if(fz&&fz!=='n')setFz(fz);
+  if(hi)setHi(true);
+})();
+</script>
+</body>
+</html>
