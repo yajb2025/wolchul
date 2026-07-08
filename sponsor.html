@@ -343,8 +343,13 @@ footer a{color:rgba(255,255,255,.7);text-decoration:underline}
               <div class="acc-radio-num">광주은행 1107-021-791571</div>
               <div class="acc-radio-name">예금주: 영암군장애인종합복지관</div>
             </div>
+            <div class="acc-radio-card" onclick="selectAcc(event.currentTarget,'foundation')" role="button" tabindex="0">
+              <div class="acc-radio-top">🏛️ 법인후원</div>
+              <div class="acc-radio-num">광주은행 672-107-381789</div>
+              <div class="acc-radio-name">예금주: 사회복지법인 전남밀알복지재단</div>
+            </div>
           </div>
-          <p class="fg-hint">비지정후원은 복지관 운영 전반에, 지정후원은 신청 시 안내드리는 특정 사업에 사용됩니다.</p>
+          <p class="fg-hint">비지정후원은 복지관 운영 전반에, 지정후원은 신청 시 안내드리는 특정 사업에, 법인후원은 사회복지법인 전남밀알복지재단으로 후원됩니다.</p>
         </div>
       </div>
 
@@ -362,6 +367,11 @@ footer a{color:rgba(255,255,255,.7);text-decoration:underline}
               <div class="acc-radio-top">🎯 지정후원</div>
               <div class="acc-radio-num">광주은행 1107-021-791571</div>
               <div class="acc-radio-name">예금주: 영암군장애인종합복지관</div>
+            </div>
+            <div class="acc-radio-card" onclick="selectAcc(event.currentTarget,'foundation')" role="button" tabindex="0">
+              <div class="acc-radio-top">🏛️ 법인후원</div>
+              <div class="acc-radio-num">광주은행 672-107-381789</div>
+              <div class="acc-radio-name">예금주: 사회복지법인 전남밀알복지재단</div>
             </div>
           </div>
         </div>
@@ -559,6 +569,7 @@ footer a{color:rgba(255,255,255,.7);text-decoration:underline}
   <strong>영암군장애인종합복지관</strong><br>
   전라남도 영암군 영암읍 오리정길 37 &nbsp;|&nbsp; T 061-470-6743 &nbsp;|&nbsp; F 061-470-6769<br>
   후원 계좌: 광주은행 1107-021-791537 (비지정후원) / 1107-021-791571 (지정후원) &nbsp;|&nbsp; 예금주: 영암군장애인종합복지관<br>
+  법인후원 계좌: 광주은행 672-107-381789 &nbsp;|&nbsp; 예금주: 사회복지법인 전남밀알복지재단<br>
   <a href="privacy.html">개인정보처리방침</a>
 </footer>
 
@@ -708,7 +719,7 @@ async function submitForm(){
   if(captchaInput!==captchaAnswer){alert('스팸 방지 질문의 답이 올바르지 않습니다. 다시 확인해 주세요.');genCaptcha();return;}
 
   const typeLabel={regular:'정기 후원',once:'일시 후원',goods:'물품 후원',vol:'자원봉사'};
-  const accLabel={undesignated:'비지정후원(광주은행 1107-021-791537)',designated:'지정후원(광주은행 1107-021-791571)'};
+  const accLabel={undesignated:'비지정후원(광주은행 1107-021-791537)',designated:'지정후원(광주은행 1107-021-791571)',foundation:'법인후원(사회복지법인 전남밀알복지재단, 광주은행 672-107-381789)'};
   let detail='';
   if(curType==='regular'){
     const amt=selAmt==='custom'
