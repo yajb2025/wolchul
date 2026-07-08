@@ -635,6 +635,13 @@ footer{background:#0d2818;color:rgba(255,255,255,.65);padding:52px 0 28px}
           </div>
         </div>
         <div class="acc-card">
+          <div class="acc-card-ico">🏛️</div>
+          <div>
+            <p id="ftAcc3">법인후원 · 광주은행 672-107-381789</p>
+            <span>예금주: 사회복지법인 전남밀알복지재단</span>
+          </div>
+        </div>
+        <div class="acc-card">
           <div class="acc-card-ico">📞</div>
           <div>
             <p>후원 문의</p>
@@ -712,6 +719,7 @@ footer{background:#0d2818;color:rgba(255,255,255,.65);padding:52px 0 28px}
       <h4>후원 계좌</h4>
       <div class="ft-acc">비지정: 광주은행 1107-021-791537</div>
       <div class="ft-acc" style="margin-top:6px">지정: 광주은행 1107-021-791571</div>
+      <div class="ft-acc" style="margin-top:6px">법인: 광주은행 672-107-381789</div>
     </div>
   </div>
   <!-- SNS · QR -->
@@ -1286,6 +1294,7 @@ function applySettings(){
     // 후원 계좌
     if(s.acc1){const e=document.getElementById('ftAcc1');if(e)e.textContent='비지정후원 · '+s.acc1;}
     if(s.acc2){const e=document.getElementById('ftAcc2');if(e)e.textContent='지정후원 · '+s.acc2;}
+    if(s.acc3){const e=document.getElementById('ftAcc3');if(e)e.textContent='법인후원 · '+s.acc3;}
     // 주소/전화 상단바
     if(s.addr){const e=document.querySelector('.topbar span');if(e)e.innerHTML='📍 '+s.addr;}
     if(s.tel){const spans=document.querySelectorAll('.topbar span');if(spans[1])spans[1].innerHTML='📞 '+s.tel;}
