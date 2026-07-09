@@ -602,46 +602,6 @@ footer{background:#0d2818;color:rgba(255,255,255,.65);padding:52px 0 28px}
 </div>
 
 <main id="main">
-  <div class="inner section" id="articles">
-
-    <!-- 오프라인 -->
-    <div class="offline" id="offlineNote">
-      ℹ️ 현재 샘플 데이터입니다. 관리자 페이지에서 기사를 등록하면 실시간으로 반영됩니다.
-    </div>
-
-    <!-- 로딩 -->
-    <div class="loading" id="loadingBox">
-      <div class="spin"></div>
-      <p>기사를 불러오는 중...</p>
-    </div>
-
-    <!-- 특집 -->
-    <div class="feat-wrap" id="featArea" style="display:none">
-      <div class="sec-eyebrow">Featured</div>
-      <div class="feat" id="featCard" tabindex="0" role="button"></div>
-    </div>
-
-    <!-- 목록 -->
-    <div id="listArea" style="display:none">
-      <div class="grid-hd">
-        <div>
-          <div class="sec-eyebrow">Articles</div>
-          <div class="sec-title" style="font-size:1.2rem">전체 기사</div>
-        </div>
-        <div class="cnt">총 <strong id="cntNum">0</strong>건</div>
-      </div>
-      <div class="grid" id="artGrid" role="list"></div>
-      <div class="empty" id="emptyBox" style="display:none">
-        <div style="font-size:2.5rem">🔍</div>
-        <p id="emptyMsg">검색 결과가 없습니다.</p>
-        <button class="btn-rs" onclick="clearSearch()">초기화</button>
-      </div>
-      <div class="lm-wrap" id="lmBox" style="display:none">
-        <button class="btn-lm" onclick="loadMore()">기사 더보기 ↓</button>
-      </div>
-    </div>
-  </div>
-
   <!-- 후원 -->
   <div class="donor" id="donor">
     <!-- 후원 유형 안내 -->
@@ -725,6 +685,47 @@ footer{background:#0d2818;color:rgba(255,255,255,.65);padding:52px 0 28px}
       </div>
     </div>
   </div>
+
+  <div class="inner section" id="articles">
+
+    <!-- 오프라인 -->
+    <div class="offline" id="offlineNote">
+      ℹ️ 현재 샘플 데이터입니다. 관리자 페이지에서 기사를 등록하면 실시간으로 반영됩니다.
+    </div>
+
+    <!-- 로딩 -->
+    <div class="loading" id="loadingBox">
+      <div class="spin"></div>
+      <p>기사를 불러오는 중...</p>
+    </div>
+
+    <!-- 특집 -->
+    <div class="feat-wrap" id="featArea" style="display:none">
+      <div class="sec-eyebrow">Featured</div>
+      <div class="feat" id="featCard" tabindex="0" role="button"></div>
+    </div>
+
+    <!-- 목록 -->
+    <div id="listArea" style="display:none">
+      <div class="grid-hd">
+        <div>
+          <div class="sec-eyebrow">Articles</div>
+          <div class="sec-title" style="font-size:1.2rem">전체 기사</div>
+        </div>
+        <div class="cnt">총 <strong id="cntNum">0</strong>건</div>
+      </div>
+      <div class="grid" id="artGrid" role="list"></div>
+      <div class="empty" id="emptyBox" style="display:none">
+        <div style="font-size:2.5rem">🔍</div>
+        <p id="emptyMsg">검색 결과가 없습니다.</p>
+        <button class="btn-rs" onclick="clearSearch()">초기화</button>
+      </div>
+      <div class="lm-wrap" id="lmBox" style="display:none">
+        <button class="btn-lm" onclick="loadMore()">기사 더보기 ↓</button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <!-- 모달 -->
