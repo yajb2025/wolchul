@@ -298,6 +298,32 @@ img{max-width:100%}
   transition:all .18s;width:fit-content}
 .btn-donor:hover{background:var(--c4)}
 
+/* ── 후원 유형 안내 ── */
+.dtype-wrap{position:relative;z-index:1;max-width:1280px;margin:0 auto 52px;padding:0 32px}
+.dtype-eyebrow{color:var(--c4);font-size:.75rem;font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:10px}
+.dtype-wrap h2{font-size:2rem;font-weight:900;color:#fff;letter-spacing:-.03em;margin-bottom:8px}
+.dtype-sub{color:rgba(255,255,255,.7);font-size:.88rem;line-height:1.7;margin-bottom:28px}
+.dtype-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.dtype-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+  border-radius:var(--r);padding:18px 20px;display:flex;gap:14px;align-items:flex-start;
+  transition:background .18s}
+.dtype-card:hover{background:rgba(255,255,255,.14)}
+.dtype-ico{font-size:1.5rem;flex-shrink:0;line-height:1.3}
+.dtype-card b{display:block;color:#fff;font-size:.9rem;font-weight:800;margin-bottom:4px}
+.dtype-card p{color:rgba(255,255,255,.72);font-size:.8rem;line-height:1.65}
+.dtype-visit{margin-top:14px;background:rgba(116,198,157,.14);
+  border:1px solid rgba(116,198,157,.35);border-radius:var(--r);
+  padding:16px 20px;display:flex;gap:14px;align-items:flex-start}
+.dtype-visit .dtype-ico{font-size:1.4rem}
+.dtype-visit b{display:block;color:#fff;font-size:.88rem;font-weight:800;margin-bottom:4px}
+.dtype-visit p{color:rgba(255,255,255,.8);font-size:.8rem;line-height:1.7}
+@media(max-width:720px){
+  .dtype-wrap{padding:0 20px;margin-bottom:40px}
+  .dtype-wrap h2{font-size:1.5rem}
+  .dtype-grid{grid-template-columns:1fr}
+}
+
 /* ── 모달 ── */
 .mov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;
   overflow-y:auto;padding:20px;align-items:flex-start;justify-content:center}
@@ -612,6 +638,41 @@ footer{background:#0d2818;color:rgba(255,255,255,.65);padding:52px 0 28px}
 
   <!-- 후원 -->
   <div class="donor" id="donor">
+    <!-- 후원 유형 안내 -->
+    <div class="dtype-wrap">
+      <div class="dtype-eyebrow">Donation Guide</div>
+      <h2>후원 안내</h2>
+      <p class="dtype-sub">영암군장애인종합복지관은 여러분의 형편과 마음에 맞는 다양한 방법으로 후원에 참여하실 수 있습니다.</p>
+      <div class="dtype-grid">
+        <div class="dtype-card"><span class="dtype-ico">📅</span>
+          <div><b>정기후원</b><p>자동이체 또는 CMS 입금을 통해 매월 일정한 금액을 정기적으로 후원하는 방식</p></div>
+        </div>
+        <div class="dtype-card"><span class="dtype-ico">🎁</span>
+          <div><b>일시후원</b><p>원하는 시기에 자유롭게 후원하는 방식</p></div>
+        </div>
+        <div class="dtype-card"><span class="dtype-ico">💝</span>
+          <div><b>비지정후원</b><p>사용처를 지정하지 않고 기부하는 후원</p></div>
+        </div>
+        <div class="dtype-card"><span class="dtype-ico">🎯</span>
+          <div><b>지정후원</b><p>특정 사업을 지정하여 기부하는 후원</p></div>
+        </div>
+        <div class="dtype-card"><span class="dtype-ico">🏦</span>
+          <div><b>자동이체</b><p>지정한 계좌에서 매월 정해진 날짜에 후원금이 자동으로 이체되는 방식</p></div>
+        </div>
+        <div class="dtype-card"><span class="dtype-ico">💳</span>
+          <div><b>CMS</b><p>신청한 계좌에서 매월 정해진 날짜에 후원금이 자동으로 출금되는 방식</p></div>
+        </div>
+        <div class="dtype-card"><span class="dtype-ico">📦</span>
+          <div><b>물품후원</b><p>식품, 생필품, 의류 등 필요한 물품을 기부하는 방식</p></div>
+        </div>
+      </div>
+      <div class="dtype-visit"><span class="dtype-ico">🚶</span>
+        <div><b>방문 후원 · 상담 안내</b>
+          <p>전라남도 영암군 영암읍 오리정길 37 영암군장애인종합복지관 1층 기획홍보팀 사무실<br>
+          📞 061-470-6743 &nbsp;|&nbsp; ✉ yasg2025@naver.com</p>
+        </div>
+      </div>
+    </div>
     <div class="donor-in">
       <div class="donor-left">
         <div class="sec-eyebrow" style="color:var(--c4)">Donation</div>
