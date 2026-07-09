@@ -449,8 +449,8 @@ footer a{color:rgba(255,255,255,.7);text-decoration:underline}
         </select>
       </div>
       <div class="fg">
-        <label>주소 <span style="color:var(--ink-s);font-weight:400">(기부금 영수증 우편 발송 희망 시 입력)</span></label>
-        <input type="text" id="dAddr" placeholder="주소 입력 (선택사항)">
+        <label>주소 <span class="req">*</span> <span style="color:var(--ink-s);font-weight:400">(기부금 영수증 발급·우편 발송에 사용)</span></label>
+        <input type="text" id="dAddr" placeholder="주소를 입력해 주세요 (필수)">
       </div>
     </div>
 
@@ -524,7 +524,7 @@ footer a{color:rgba(255,255,255,.7);text-decoration:underline}
         <table class="agree-tbl">
           <thead><tr><th>수집 항목</th><th>수집 목적</th><th>보유·이용 기간</th></tr></thead>
           <tbody><tr>
-            <td>필수: 이름, 연락처<br>선택: 이메일, 주민등록번호/사업자등록번호, 주소</td>
+            <td>필수: 이름, 연락처, 주소<br>선택: 이메일, 주민등록번호/사업자등록번호</td>
             <td>후원 접수·확인, 기부금 영수증 발급, 후원 내역 관리</td>
             <td>후원 종료일로부터 5년<br>(전자상거래법 등 관계 법령에 따른 보존)</td>
           </tr></tbody>
@@ -746,6 +746,8 @@ async function submitForm(){
   const phone=document.getElementById('dPhone').value.trim();
   if(!name){alert('기부자명을 입력해 주세요.');document.getElementById('dName').focus();return;}
   if(!phone){alert('연락처를 입력해 주세요.');document.getElementById('dPhone').focus();return;}
+  const addrVal=document.getElementById('dAddr').value.trim();
+  if(!addrVal){alert('주소를 입력해 주세요.');document.getElementById('dAddr').focus();return;}
   // 정기 후원 시 CMS 자동이체 계좌 정보 필수 검증
   if(curType==='regular'){
     const cmsFields=[['cmsBank','금융기관명(은행명)을 입력해 주세요.'],

@@ -936,22 +936,57 @@ function openSpDetail(id){
   const date=(s.createdAt||s.date||'').toString().substring(0,10).replace(/-/g,'.');
   gi('dh-date').textContent='신청일: '+date;
   gi('spStatusSel').value=s.status||'신청';
-  const rows=[
+  const RECEIPT_LABEL={personal:'개인용 (기부금 영수증 발행)',org:'사업자/단체용 (기부금 영수증 발행)',none:'발행 불필요'};
+  const jumin=(s.jumin&&s.jumin!=='-')?s.jumin:'—';
+  const amt=s.amount?parseInt(s.amount).toLocaleString()+'원'+(s.type==='regular'?' (매월)':''):'—';
+
+  // 1. 신청 내용
+  const sec1=[
     ['신청 유형', TYPE_LABEL[s.type]||s.type||'—'],
+    ['후원 금액', amt],
+    ['입금 계좌', s.accountLabel||'—'],
+  ];
+  if(s.type==='goods') sec1.push(['물품 정보', s.goodsInfo||'—']);
+  if(s.type==='vol') sec1.push(['봉사 내용', s.volInfo||'—']);
+
+  // 2. 신청인(기부자) 정보
+  const sec2=[
     ['신청인', s.name||'—'],
     ['연락처', s.phone||'—'],
     ['이메일', s.email||'—'],
-    ['생년월일', s.birth||'—'],
+    ['팩스', s.fax||'—'],
+    ['주소 구분', s.addrType||'—'],
     ['주소', s.addr||'—'],
-    ['후원 금액', s.amount?parseInt(s.amount).toLocaleString()+'원':'—'],
-    ['입금 방법', s.payMethod==='cms'?'CMS 자동이체':'직접 송금'],
+  ];
+
+  // 3. 납부 방법 및 영수증
+  const sec3=[];
+  if(s.type==='regular'){
+    sec3.push(
+      ['CMS 금융기관', s.cmsBank||'—'],
+      ['CMS 계좌번호', s.cmsAccount||'—'],
+      ['CMS 예금주', s.cmsOwner||'—'],
+      ['예금주 생년월일/사업자번호', s.cmsOwnerId||'—'],
+      ['정기 이체일', s.cmsDay||'—'],
+    );
+  }
+  sec3.push(
+    ['영수증 발행 구분', RECEIPT_LABEL[s.receiptType]||s.receiptType||'—'],
+    ['주민등록번호/사업자등록번호', jumin],
     ['전달 말씀', s.message||'—'],
     ['소식 수신 동의', s.marketingConsent ? '동의함' : '미동의'],
     ['상태', s.status||'신청'],
-  ];
-  gi('dContent').innerHTML =
-    '<div style="background:var(--gold-l);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:8px 12px;font-size:.71rem;color:#8a5a00;margin-bottom:12px">⚠️ 개인정보입니다. 업무 목적 외 열람·저장·유출을 금지합니다.</div>'
+  );
+
+  const secHtml=(title,rows)=>
+    `<div style="font-size:.72rem;font-weight:800;color:var(--gold);margin:14px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--border)">${title}</div>`
     + rows.map(([k,v])=>`<div class="drow"><div class="dk">${k}</div><div class="dv">${v}</div></div>`).join('');
+
+  gi('dContent').innerHTML =
+    '<div style="background:var(--gold-l);border-left:3px solid var(--gold);border-radius:0 6px 6px 0;padding:8px 12px;font-size:.71rem;color:#8a5a00;margin-bottom:4px">⚠️ 개인정보입니다. 업무 목적 외 열람·저장·유출을 금지합니다.</div>'
+    + secHtml('1️⃣ 신청 내용', sec1)
+    + secHtml('2️⃣ 신청인(기부자) 정보', sec2)
+    + secHtml('3️⃣ 납부 방법 및 영수증·동의', sec3);
   gi('spDetail').classList.add('open');
 }
 
@@ -985,16 +1020,24 @@ function exportCsv(){
   if(!SPONSORS.length){ toast('다운로드할 데이터가 없습니다.','err'); return; }
   const ok = confirm('⚠️ 개인정보 보호 안내\n\n다운로드되는 파일에는 후원자의 이름, 연락처 등 개인정보가 포함됩니다.\n\n- 업무 목적 외 사용을 금지합니다\n- 파일을 외부에 유출하거나 공유하지 마세요\n- 사용 후 안전하게 삭제해 주세요\n\n위 내용에 동의하고 다운로드하시겠습니까?');
   if(!ok) return;
-  const headers=['신청일','이름','연락처','이메일','유형','금액','입금방법','전달말씀','소식수신동의','상태'];
+  const RECEIPT_CSV={personal:'개인용',org:'사업자/단체용',none:'발행불필요'};
+  const headers=['신청일','유형','금액','입금계좌','이름','연락처','이메일','팩스','주소구분','주소','주민등록번호/사업자등록번호','CMS금융기관','CMS계좌번호','CMS예금주','예금주생년월일/사업자번호','정기이체일','영수증구분','물품정보','봉사내용','전달말씀','소식수신동의','상태'];
+  const c=v=>('"'+String(v==null?'':v).replace(/"/g,'""')+'"');
   const rows=SPONSORS.map(s=>[
     (s.createdAt||s.date||'').toString().substring(0,10),
-    s.name||'', s.phone||'', s.email||'',
     TYPE_LABEL[s.type]||s.type||'',
-    s.amount||'', s.payMethod==='cms'?'CMS자동이체':'직접송금',
-    (s.message||'').replace(/,/g,' '),
+    s.amount||'',
+    s.accountLabel||'',
+    s.name||'', s.phone||'', s.email||'', s.fax||'',
+    s.addrType||'', s.addr||'',
+    (s.jumin&&s.jumin!=='-')?s.jumin:'',
+    s.cmsBank||'', s.cmsAccount||'', s.cmsOwner||'', s.cmsOwnerId||'', s.cmsDay||'',
+    RECEIPT_CSV[s.receiptType]||s.receiptType||'',
+    s.goodsInfo||'', s.volInfo||'',
+    s.message||'',
     s.marketingConsent?'동의':'미동의',
     s.status||'신청'
-  ]);
+  ].map(c));
   const csv='\uFEFF'+[headers,...rows].map(r=>r.join(',')).join('\n');
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
