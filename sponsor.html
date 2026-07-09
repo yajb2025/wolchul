@@ -123,6 +123,13 @@ main{max-width:720px;margin:0 auto;padding:32px 24px 64px}
 .amt-btn:hover{border-color:var(--c1);color:var(--c1)}
 .amt-btn.on{background:var(--c1);border-color:var(--c1);color:#fff}
 
+/* CMS 자동이체 계좌 정보 */
+.cms-box{background:#eef5f0;border:1px solid #d9e7dc;border-radius:12px;
+  padding:22px 22px 8px;margin-bottom:20px}
+.cms-title{font-size:.88rem;font-weight:800;color:var(--c1);
+  margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.cms-box .fg input,.cms-box .fg select{background:#fff}
+
 /* 계좌 안내 카드 */
 .acc-select-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
 .acc-radio-card{border:2px solid var(--line);border-radius:var(--r);padding:14px;
@@ -451,6 +458,43 @@ footer a{color:rgba(255,255,255,.7);text-decoration:underline}
     <div class="card">
       <div class="card-title"><div class="num-badge">3</div>납부 방법 및 동의·서명</div>
 
+      <!-- CMS 자동이체 가입 계좌 정보 (정기 후원 시에만 표시) -->
+      <div class="cms-box" id="cmsBox">
+        <div class="cms-title">🏦 CMS 자동이체 가입 계좌 정보</div>
+        <div class="row2">
+          <div class="fg">
+            <label>금융기관명 (은행명) <span class="req">*</span></label>
+            <input type="text" id="cmsBank" placeholder="예: 농협, 신한은행">
+          </div>
+          <div class="fg">
+            <label>계좌번호 <span class="req">*</span></label>
+            <input type="text" id="cmsAcc" placeholder="'-' 제외하고 숫자만 입력" inputmode="numeric"
+              oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          </div>
+        </div>
+        <div class="row2">
+          <div class="fg">
+            <label>예금주 성함 <span class="req">*</span></label>
+            <input type="text" id="cmsOwner" placeholder="계좌 예금주 성함">
+          </div>
+          <div class="fg">
+            <label>예금주 생년월일 / 사업자번호 <span class="req">*</span></label>
+            <input type="text" id="cmsOwnerId" placeholder="예: 주민번호 앞 6자리 또는 사업자번호" inputmode="numeric">
+          </div>
+        </div>
+        <div class="fg">
+          <label>정기 후원일 (이체일) <span class="req">*</span></label>
+          <select id="cmsDay">
+            <option value="매월 5일">매월 5일</option>
+            <option value="매월 10일">매월 10일</option>
+            <option value="매월 15일">매월 15일</option>
+            <option value="매월 20일">매월 20일</option>
+            <option value="매월 25일">매월 25일</option>
+            <option value="매월 말일">매월 말일</option>
+          </select>
+        </div>
+      </div>
+
       <!-- 영수증 발급 설정 -->
       <div class="fg">
         <label>소득공제용 기부금 영수증 발행 설정</label>
@@ -595,6 +639,9 @@ function selectType(el,type){
     const e=document.getElementById('f-'+t);
     if(e)e.style.display=t===type?'':'none';
   });
+  // CMS 자동이체 계좌 정보는 정기 후원 선택 시에만 표시
+  const cms=document.getElementById('cmsBox');
+  if(cms)cms.style.display=(type==='regular')?'':'none';
   updateSteps();
 }
 
@@ -699,6 +746,17 @@ async function submitForm(){
   const phone=document.getElementById('dPhone').value.trim();
   if(!name){alert('기부자명을 입력해 주세요.');document.getElementById('dName').focus();return;}
   if(!phone){alert('연락처를 입력해 주세요.');document.getElementById('dPhone').focus();return;}
+  // 정기 후원 시 CMS 자동이체 계좌 정보 필수 검증
+  if(curType==='regular'){
+    const cmsFields=[['cmsBank','금융기관명(은행명)을 입력해 주세요.'],
+      ['cmsAcc','계좌번호를 입력해 주세요.'],
+      ['cmsOwner','예금주 성함을 입력해 주세요.'],
+      ['cmsOwnerId','예금주 생년월일 또는 사업자번호를 입력해 주세요.']];
+    for(const [id,msg] of cmsFields){
+      const el=document.getElementById(id);
+      if(el && !el.value.trim()){alert(msg);el.focus();return;}
+    }
+  }
   if(!document.getElementById('agree1').checked){alert('[필수] 개인정보 수집 및 이용에 동의해 주세요.');document.getElementById('agree1').scrollIntoView({behavior:'smooth',block:'center'});return;}
   if(!document.getElementById('agree2').checked){alert('[필수] 개인정보 제3자 제공에 동의해 주세요.');document.getElementById('agree2').scrollIntoView({behavior:'smooth',block:'center'});return;}
   if(isSigEmpty()){alert('서명을 입력해 주세요.');document.getElementById('sigCanvas').scrollIntoView({behavior:'smooth',block:'center'});return;}
@@ -725,7 +783,7 @@ async function submitForm(){
     const amt=selAmt==='custom'
       ?(parseInt(document.getElementById('customAmt').value)||0).toLocaleString()+'원'
       :parseInt(selAmt).toLocaleString()+'원';
-    detail=`<br>• 후원 금액: <strong>매월 ${amt}</strong><br>• 입금 계좌: <strong>${accLabel[selAcc]}</strong>`;
+    detail=`<br>• 후원 금액: <strong>매월 ${amt}</strong><br>• 입금 계좌: <strong>${accLabel[selAcc]}</strong><br>• CMS 이체: <strong>${document.getElementById('cmsBank').value.trim()} / ${document.getElementById('cmsDay').value}</strong>`;
   }else if(curType==='once'){
     const amt=parseInt(document.getElementById('onceAmt').value)||0;
     detail=`<br>• 후원 금액: <strong>${amt.toLocaleString()}원</strong><br>• 입금 계좌: <strong>${accLabel[selAcc]}</strong>`;
@@ -754,6 +812,11 @@ async function submitForm(){
     amount,
     account: (curType==='regular'||curType==='once') ? selAcc : '',
     accountLabel: (curType==='regular'||curType==='once') ? accLabel[selAcc] : '',
+    cmsBank: curType==='regular' ? document.getElementById('cmsBank').value.trim() : '',
+    cmsAccount: curType==='regular' ? document.getElementById('cmsAcc').value.trim() : '',
+    cmsOwner: curType==='regular' ? document.getElementById('cmsOwner').value.trim() : '',
+    cmsOwnerId: curType==='regular' ? document.getElementById('cmsOwnerId').value.trim() : '',
+    cmsDay: curType==='regular' ? document.getElementById('cmsDay').value : '',
     receiptType,
     goodsInfo: curType==='goods' ? document.getElementById('goodsInfo').value.trim() : '',
     volInfo: curType==='vol' ? document.getElementById('volInfo').value.trim() : '',
@@ -775,7 +838,7 @@ function saveLocal(data){
 function resetForm(){
   document.getElementById('formWrap').style.display='';
   document.getElementById('successBox').style.display='none';
-  ['dName','dPhone','dEmail','dFax','dBirthFront','dBirthBack1','dAddr','message','goodsInfo','volInfo','goodsAmt'].forEach(id=>{
+  ['dName','dPhone','dEmail','dFax','dBirthFront','dBirthBack1','dAddr','message','goodsInfo','volInfo','goodsAmt','cmsBank','cmsAcc','cmsOwner','cmsOwnerId'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('agree1').checked=false;
